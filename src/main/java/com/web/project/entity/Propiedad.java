@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="propiedades")
-@NamedQuery(name="Propiedade.findAll", query="SELECT p FROM Propiedade p")
+@NamedQuery(name="Propiedad.findAll", query="SELECT p FROM Propiedad p")
 @Data
 @NoArgsConstructor
 public class Propiedad implements Serializable {

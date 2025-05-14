@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name="fotos_propiedades")
-@NamedQuery(name="FotosPropiedade.findAll", query="SELECT f FROM FotosPropiedade f")
+@NamedQuery(name="FotoPropiedad.findAll", query="SELECT f FROM FotoPropiedad f")
 @NoArgsConstructor
 public class FotoPropiedad implements Serializable {
 	private static final long serialVersionUID = 1L;
