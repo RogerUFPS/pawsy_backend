@@ -3,12 +3,13 @@ package com.web.project.entity;
 import java.io.Serializable;
 import java.util.List;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="servicios")
-@NamedQuery(name="Servicio.findAll", query="SELECT s FROM Servicio s")
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
 public class Servicio implements Serializable {

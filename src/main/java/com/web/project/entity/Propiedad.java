@@ -3,14 +3,18 @@ package com.web.project.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name="propiedades")
-@NamedQuery(name="Propiedad.findAll", query="SELECT p FROM Propiedad p")
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
 public class Propiedad implements Serializable {
@@ -38,6 +42,7 @@ public class Propiedad implements Serializable {
 	private BigDecimal precioPorNoche;
 
 	//bi-directional many-to-one association to FotosPropiedade
+	@JsonIgnore
 	@OneToMany(mappedBy="propiedade")
 	private List<FotoPropiedad> fotosPropiedades;
 
@@ -47,6 +52,7 @@ public class Propiedad implements Serializable {
 	private Usuario usuario;
 
 	//bi-directional many-to-one association to Reserva
+	@JsonIgnore
 	@OneToMany(mappedBy="propiedade")
 	private List<Reserva> reservas;
 

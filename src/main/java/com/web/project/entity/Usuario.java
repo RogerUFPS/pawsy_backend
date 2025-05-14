@@ -2,7 +2,11 @@ package com.web.project.entity;
 
 import java.io.Serializable;
 import java.util.List;
-import jakarta.persistence.*;	
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="usuarios")
-@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
+@AllArgsConstructor
 @Data
 @NoArgsConstructor	
 public class Usuario implements Serializable {
@@ -37,11 +41,11 @@ public class Usuario implements Serializable {
 	@Column(name="tipo_usuario", nullable=false, length=20)
 	private String tipoUsuario;
 
-	//bi-directional many-to-one association to Mascota
+	@JsonIgnore
 	@OneToMany(mappedBy="usuario")
 	private List<Mascota> mascotas;
 
-	//bi-directional many-to-one association to Propiedade
+	@JsonIgnore
 	@OneToMany(mappedBy="usuario")
 	private List<Propiedad> propiedades;
 
