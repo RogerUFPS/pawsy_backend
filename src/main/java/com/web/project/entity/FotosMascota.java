@@ -2,6 +2,7 @@ package com.web.project.entity;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name="fotos_mascotas")
-@NamedQuery(name="FotosMascota.findAll", query="SELECT f FROM FotosMascota f")
+@AllArgsConstructor
 @NoArgsConstructor
 public class FotosMascota implements Serializable {
 	private static final long serialVersionUID = 1L;

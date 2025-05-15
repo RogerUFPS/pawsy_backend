@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="reservas")
-@NamedQuery(name="Reserva.findAll", query="SELECT r FROM Reserva r")
+@AllArgsConstructor
 @Data	
 @NoArgsConstructor
 public class Reserva implements Serializable {

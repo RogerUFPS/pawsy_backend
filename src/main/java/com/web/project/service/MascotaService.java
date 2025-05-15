@@ -1,4 +1,4 @@
-package com.web.project.services;
+package com.web.project.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -103,6 +103,11 @@ public class MascotaService {
                 .tipoId(mascota.getTipoMascota() != null ? mascota.getTipoMascota().getId() : null)
                 .build();
     }
- 
-	
+
+
+    public MascotaDTO findById(Integer id) {
+        Mascota mascota = mascotaRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("El mascota con ID " + id + " no existe."));
+        return toDTO(mascota);
+    }
 }
