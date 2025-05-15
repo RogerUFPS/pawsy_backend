@@ -5,8 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.web.project.entity.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-<<<<<<< HEAD
-
-=======
->>>>>>> Gabriel
 }
