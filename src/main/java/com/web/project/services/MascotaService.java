@@ -33,10 +33,18 @@ public class MascotaService {
 	    return mascotaRepository.findByUsuarioId(clienteId)
 	            .stream().map(this::toDTO).collect(Collectors.toList());
 	}
-	
-	public MascotaDTO create(MascotaDTO dto) {
-        Usuario cliente = usuarioRepository.findById(dto.getClienteId()).orElseThrow();
-        TipoMascota tipo = dto.getTipoId() != null ? tipoMascotaRepository.findById(dto.getTipoId()).orElse(null) : null;
+
+    public MascotaDTO create(MascotaDTO dto) {
+        if (dto.getClienteId() == null) {
+            throw new IllegalArgumentException("El campo clienteId no puede ser nulo.");
+        }
+
+        Usuario cliente = usuarioRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getClienteId()));
+
+        TipoMascota tipo = (dto.getTipoId() != null)
+                ? tipoMascotaRepository.findById(dto.getTipoId()).orElse(null)
+                : null;
 
         Mascota mascota = new Mascota();
         mascota.setNombre(dto.getNombre());
@@ -47,8 +55,8 @@ public class MascotaService {
 
         return toDTO(mascotaRepository.save(mascota));
     }
-	
-	public MascotaDTO update(Integer id, MascotaDTO dto) {
+
+    public MascotaDTO update(Integer id, MascotaDTO dto) {
         Mascota mascota = mascotaRepository.findById(id).orElseThrow();
 
         mascota.setNombre(dto.getNombre());
