@@ -1,6 +1,7 @@
 package com.web.project.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -28,11 +29,19 @@ public class MascotaService {
 	public List<MascotaDTO> listAll(){
 		return mascotaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
 	}
-	
-	public List<MascotaDTO> listarPorUsuario(Integer clienteId) {
-	    return mascotaRepository.findByUsuarioId(clienteId)
-	            .stream().map(this::toDTO).collect(Collectors.toList());
-	}
+
+    public List<MascotaDTO> listarPorUsuario(Integer clienteId) {
+        // Verifica si el usuario existe
+        if (!usuarioRepository.existsById(clienteId)) {
+            throw new NoSuchElementException("El cliente con ID " + clienteId + " no existe.");
+        }
+
+        return mascotaRepository.findByUsuarioId(clienteId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     public MascotaDTO create(MascotaDTO dto) {
         if (dto.getClienteId() == null) {
@@ -40,11 +49,13 @@ public class MascotaService {
         }
 
         Usuario cliente = usuarioRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + dto.getClienteId()));
+                .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));
 
-        TipoMascota tipo = (dto.getTipoId() != null)
-                ? tipoMascotaRepository.findById(dto.getTipoId()).orElse(null)
-                : null;
+        TipoMascota tipo = null;
+        if (dto.getTipoId() != null) {
+            tipo = tipoMascotaRepository.findById(dto.getTipoId())
+                    .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
+        }
 
         Mascota mascota = new Mascota();
         mascota.setNombre(dto.getNombre());

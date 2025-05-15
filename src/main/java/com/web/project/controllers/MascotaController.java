@@ -2,6 +2,7 @@ package com.web.project.controllers;
 
 import com.web.project.entity.dto.MascotaDTO;
 import com.web.project.services.MascotaService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +35,14 @@ public class MascotaController {
 
     // Crear una nueva mascota
     @PostMapping
-    public ResponseEntity<MascotaDTO> crearMascota(@RequestBody MascotaDTO dto) {
+    public ResponseEntity<MascotaDTO> crearMascota(@Valid @RequestBody MascotaDTO dto) {
         MascotaDTO nuevaMascota = mascotaService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaMascota);
     }
 
     // Actualizar una mascota existente
     @PutMapping("/{id}")
-    public ResponseEntity<MascotaDTO> actualizarMascota(@PathVariable Integer id, @RequestBody MascotaDTO dto) {
+    public ResponseEntity<MascotaDTO> actualizarMascota(@PathVariable Integer id, @Valid @RequestBody MascotaDTO dto) {
         MascotaDTO mascotaActualizada = mascotaService.update(id, dto);
         return ResponseEntity.ok(mascotaActualizada);
     }
@@ -52,7 +53,4 @@ public class MascotaController {
         mascotaService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }
