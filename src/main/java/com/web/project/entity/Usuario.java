@@ -6,6 +6,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,14 +30,18 @@ public class Usuario implements Serializable {
 
 	@Column(length=200)
 	private String direccion;
-
+	
+	@NotBlank(message = "El email es obligatorio")
+    @Email(message = "El email no tiene un formato válido")
 	@Column(nullable=false, length=150)
 	private String email;
-
+	
+	
 	@Column(nullable=false, length=100)
 	private String nombre;
-
-	@Column(length=20)
+	
+	@NotBlank(message = "El telefono es obligatorio")
+	@Column(nullable=false, length=20)
 	private String telefono;
 
 	@Column(name="tipo_usuario", nullable=false, length=20)

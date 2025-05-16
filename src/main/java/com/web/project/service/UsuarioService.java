@@ -16,6 +16,15 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     public Usuario crearUsuario(Usuario usuario) {
+    	
+    	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado");
+        }
+
+        if (usuarioRepository.existsByTelefono(usuario.getTelefono())) {
+            throw new IllegalArgumentException("El teléfono ya está registrado");
+        }
+    	
         return usuarioRepository.save(usuario);
     }
 
@@ -28,14 +37,24 @@ public class UsuarioService {
     }
 
     public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) {
-        return usuarioRepository.findById(id).map(usuario -> {
-            usuario.setNombre(usuarioActualizado.getNombre());
-            usuario.setEmail(usuarioActualizado.getEmail());
-            usuario.setDireccion(usuarioActualizado.getDireccion());
-            usuario.setTelefono(usuarioActualizado.getTelefono());
-            usuario.setTipoUsuario(usuarioActualizado.getTipoUsuario());
-            return usuarioRepository.save(usuario);
-        }).orElse(null);
+    	
+    	
+    	if(usuarioActualizado.getNombre() == null) {
+    		
+    	}
+    	
+    	try {
+	        return usuarioRepository.findById(id).map(usuario -> {
+	            usuario.setNombre(usuarioActualizado.getNombre());
+	            usuario.setEmail(usuarioActualizado.getEmail());
+	            usuario.setDireccion(usuarioActualizado.getDireccion());
+	            usuario.setTelefono(usuarioActualizado.getTelefono());
+	            usuario.setTipoUsuario(usuarioActualizado.getTipoUsuario());
+	            return usuarioRepository.save(usuario);
+	        }).orElse(null);
+    	}catch(Exception e) {
+    		return null;
+    	}
     }
 
     public boolean eliminarUsuario(Integer id) {

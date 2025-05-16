@@ -1,14 +1,19 @@
 package com.web.project.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuario")
@@ -18,9 +23,14 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<String> crearUsuario(@RequestBody Usuario usuario) {
-        usuarioService.crearUsuario(usuario); 
-        return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
+    public ResponseEntity<?> crearUsuario(@Valid @RequestBody Usuario usuario) {
+    	
+    	try {
+            Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+            return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.CONFLICT);
+        }
     }
 
     @GetMapping
