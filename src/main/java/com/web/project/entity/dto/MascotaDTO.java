@@ -23,6 +23,7 @@ public class MascotaDTO {
 
     @NotNull(message = "La edad es obligatoria")
     @Min(value = 0, message = "La edad no puede ser negativa")
+    @Max(value = 50, message = "La edad no debe superar los 50 años")
     private Integer edad;
 
     @NotNull(message = "El clienteId es obligatorio")

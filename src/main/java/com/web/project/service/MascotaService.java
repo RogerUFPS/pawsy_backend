@@ -48,13 +48,31 @@ public class MascotaService {
             throw new IllegalArgumentException("El campo clienteId no puede ser nulo.");
         }
 
+        if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
+        }
+
+        if (mascotaRepository.existsByNombreAndUsuario_Id(dto.getNombre(), dto.getClienteId())) {
+            throw new IllegalArgumentException("El cliente ya tiene una mascota con ese nombre.");
+        }
+
         Usuario cliente = usuarioRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));
 
-        TipoMascota tipo = null;
+        TipoMascota tipo;
         if (dto.getTipoId() != null) {
             tipo = tipoMascotaRepository.findById(dto.getTipoId())
                     .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
+        }else {
+            throw new IllegalArgumentException("El campo tipo de mascota es obligatorio.");
+        }
+
+        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 100){
+            throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
+        }
+
+        if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
+            throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
         }
 
         Mascota mascota = new Mascota();
@@ -68,26 +86,49 @@ public class MascotaService {
     }
 
     public MascotaDTO update(Integer id, MascotaDTO dto) {
-        Mascota mascota = mascotaRepository.findById(id).orElseThrow();
+        Mascota mascota = mascotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + id + " no existe."));
 
-        mascota.setNombre(dto.getNombre());
-        mascota.setEdad(dto.getEdad());
-        mascota.setDescripcion(dto.getDescripcion());
+        if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
+        }
 
-        if (dto.getClienteId() != null) {
-            Usuario cliente = usuarioRepository.findById(dto.getClienteId()).orElseThrow();
-            mascota.setUsuario(cliente);
+        if (dto.getEdad() == null || dto.getEdad() < 0){
+            throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
+        }
+
+        if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
+            throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
+        }
+
+        Integer clienteId = (dto.getClienteId() != null) ? dto.getClienteId() : mascota.getUsuario().getId();
+
+        // Validar unicidad del nombre por cliente, ignorando la mascota actual
+        if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), clienteId, id)) {
+            throw new IllegalArgumentException("Ya existe otra mascota con ese nombre para este cliente.");
         }
 
         if (dto.getTipoId() != null) {
-            TipoMascota tipo = tipoMascotaRepository.findById(dto.getTipoId()).orElse(null);
+            TipoMascota tipo = tipoMascotaRepository.findById(dto.getTipoId())
+                    .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
             mascota.setTipoMascota(tipo);
         }
 
+        if (dto.getClienteId() != null) {
+            Usuario cliente = usuarioRepository.findById(dto.getClienteId())
+                    .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));
+            mascota.setUsuario(cliente);
+        }
+
+        mascota.setNombre(dto.getNombre().trim());
+        mascota.setEdad(dto.getEdad());
+        mascota.setDescripcion(dto.getDescripcion().trim());
+
         return toDTO(mascotaRepository.save(mascota));
     }
-	
-	public void delete(Integer id) {
+
+
+    public void delete(Integer id) {
         mascotaRepository.deleteById(id);
     }
 	

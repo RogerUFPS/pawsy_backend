@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
     // Captura cualquier otro error inesperado
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
         return new ResponseEntity<>(Map.of("error", "Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
