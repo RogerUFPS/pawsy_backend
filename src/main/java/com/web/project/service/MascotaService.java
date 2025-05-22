@@ -128,8 +128,12 @@ public class MascotaService {
     }
 
 
-    public void delete(Integer id) {
-        mascotaRepository.deleteById(id);
+    public boolean delete(Integer id) {
+        if (mascotaRepository.existsById(id)) {
+            mascotaRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 	
 	
@@ -148,7 +152,7 @@ public class MascotaService {
 
     public MascotaDTO findById(Integer id) {
         Mascota mascota = mascotaRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("El mascota con ID " + id + " no existe."));
+                new NoSuchElementException("La mascota con ID " + id + " no existe."));
         return toDTO(mascota);
     }
 }
