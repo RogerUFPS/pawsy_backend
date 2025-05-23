@@ -1,11 +1,11 @@
 package com.web.project.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,6 +63,15 @@ public class Usuario implements Serializable, UserDetails {
 	@OneToMany(mappedBy="usuario")
 	private List<Propiedad> propiedades;
 
+    @Column(name = "token_verificacion", length = 100)
+    private String token;
+
+    @Column(name = "token_expiracion")
+    private LocalDateTime expiracion;
+
+    @Column(nullable = false)
+    private boolean verificado = false;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return null;
@@ -75,7 +84,7 @@ public class Usuario implements Serializable, UserDetails {
 
 	@Override
 	public String getUsername() {
-		return getNombre();
+		return getEmail();
 	}
 
 

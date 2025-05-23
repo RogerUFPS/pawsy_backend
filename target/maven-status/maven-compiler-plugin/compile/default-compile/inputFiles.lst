@@ -6,6 +6,8 @@ C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\we
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\AuthResponse.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\MascotaDTO.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\RegisterRequest.java
+C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\RegisterResponse.java
+C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\VerificationResponse.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\entity\FotoPropiedad.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\entity\FotosMascota.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\entity\Mascota.java
@@ -28,6 +30,7 @@ C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\we
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\security\JwtAuthFilter.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\security\SecurityConfig.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\AuthService.java
+C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\EnviarEmail.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\JwtService.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\MascotaService.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\UsuarioService.java
