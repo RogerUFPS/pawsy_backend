@@ -1,4 +1,4 @@
-package com.web.project.entity.dto;
+package com.web.project.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
