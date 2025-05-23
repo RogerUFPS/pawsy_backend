@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/mascota")
+@RequestMapping("/api/mascota")
 public class MascotaController {
 
 	private final MascotaService mascotaService;
