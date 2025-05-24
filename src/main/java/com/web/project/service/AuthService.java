@@ -10,7 +10,10 @@ import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
+
+import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,17 +49,40 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+
+        Usuario usuario = usuarioRepo.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Usuario no existente"));
+
+        if(!usuario.isVerificado()) {
+            throw new IllegalStateException("Debes verificar tu correo antes de iniciar sesion");
+        }
+
+        try {
+            authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch(RuntimeException ex) {throw new RuntimeException("Credenciales invalidas");}
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtService.generateToken(userDetails);
         return new AuthResponse(token);
     }
 
     public RegisterResponse register(RegisterRequest request) {
+
         if (usuarioRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("El usuario ya existe.");
+
+            Usuario ex = usuarioRepo.findByEmail(request.getEmail()).get();
+
+            if(!ex.isVerificado()) {
+
+                if(ex.getExpiracion().isBefore(LocalDateTime.now())) {
+                    usuarioRepo.delete(ex);
+                } else {
+                    throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
+                }
+            } else {
+                throw new RuntimeException("El usuario ya existe.");
+            }
         }
 
         Usuario nuevoUsuario = new Usuario();
@@ -85,7 +111,8 @@ public class AuthService {
         } 
         Usuario s = usuarioRepo.findByEmail(email).get();
 
-        if(s.getExpiracion().isAfter(LocalDateTime.now().plusMinutes(5) ) ) {
+        if(s.getExpiracion().isBefore(LocalDateTime.now() ) ) {
+            usuarioRepo.delete(s);
             throw new RuntimeException("El tiempo de expiracion del token ya pasó!"); 
         }
         s.setVerificado(true);
@@ -107,5 +134,20 @@ public class AuthService {
 
         usuario.setClave(request.getNewPassword());
         usuarioRepo.save(usuario);
+    }
+
+    public void reenviarToken(String email) {
+
+        Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        if(usuario.isVerificado()) {
+            throw new IllegalStateException("El usuario ya esta verificado");
+        }
+
+        usuario.setToken(UUID.randomUUID().toString());
+        usuario.setExpiracion(LocalDateTime.now().plusMinutes(5));
+        usuarioRepo.save(usuario);
+        em.enviarEmailVerificacion(email, usuario.getToken());
+
     }
 }

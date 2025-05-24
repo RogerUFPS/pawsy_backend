@@ -24,7 +24,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest req) {
-        return ResponseEntity.ok(authService.register(req));
+
+        RegisterResponse au = authService.register(req);
+        return ResponseEntity.ok(au);
     }
 
     @PostMapping("/login")
@@ -33,12 +35,20 @@ public class AuthController {
     }
 
     @GetMapping("/verificar")
-    public ResponseEntity<VerificationResponse> verificar(@RequestParam String UUID, String email) {
+    public ResponseEntity<VerificationResponse> verificar(@RequestParam String UUID, @RequestParam String email) {
         return ResponseEntity.ok(authService.verificar(UUID, email));
     }
 
+    @PostMapping("/reenvio-token")
+    public ResponseEntity<?> reenviarToken(@RequestParam String email) {
+        
+        authService.reenviarToken(email);
+        return ResponseEntity.ok("Se ha reenviado el token, revisa el correo");
+    }
+    
+
     @PostMapping("/cambio-contra")
-    public ResponseEntity<?> cambioContra(@RequestParam ChangePasswordRequest req) {
+    public ResponseEntity<?> cambioContra(@RequestBody ChangePasswordRequest req) {
         authService.changePassword(req);
         return ResponseEntity.ok("La contraseña se actualizo correctamente");
     }

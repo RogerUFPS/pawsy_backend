@@ -4,6 +4,7 @@ C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\we
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\controller\UsuarioController.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\AuthRequest.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\AuthResponse.java
+C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\ChangePasswordRequest.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\MascotaDTO.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\RegisterRequest.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\dto\RegisterResponse.java
@@ -30,7 +31,7 @@ C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\we
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\security\JwtAuthFilter.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\security\SecurityConfig.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\AuthService.java
-C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\EnviarEmail.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\JwtService.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\MascotaService.java
+C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\ServiceEmail.java
 C:\Users\Wicam\Downloads\container_proyecto\n\pawsy_backend\src\main\java\com\web\project\service\UsuarioService.java
