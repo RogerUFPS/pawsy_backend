@@ -132,7 +132,7 @@ public class AuthService {
             throw new IllegalArgumentException("La contraseña es incorrecta");
         }
 
-        usuario.setClave(request.getNewPassword());
+        usuario.setClave(passwordEncoder.encode(request.getNewPassword()));
         usuarioRepo.save(usuario);
     }
 
