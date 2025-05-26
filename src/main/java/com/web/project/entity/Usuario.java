@@ -1,7 +1,12 @@
 package com.web.project.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,12 +24,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor	
-public class Usuario implements Serializable {
+public class Usuario implements Serializable, UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="USUARIOS_ID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="USUARIOS_ID_GENERATOR")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique=true, nullable=false)
 	private Integer id;
 
@@ -36,14 +40,18 @@ public class Usuario implements Serializable {
 	@Column(nullable=false, length=150)
 	private String email;
 	
-	
+	@NotBlank(message = "Una contraseña es obligatoria")
+	@Column(nullable=false, length=20)
+	private String clave;
+
+	@NotBlank(message = "Debes identificarte con tu nombre")
 	@Column(nullable=false, length=100)
 	private String nombre;
 	
-	@NotBlank(message = "El telefono es obligatorio")
 	@Column(nullable=false, length=20)
 	private String telefono;
 
+	@NotBlank(message = "Debes designar si eres cuidador o cliente")
 	@Column(name="tipo_usuario", nullable=false, length=20)
 	private String tipoUsuario;
 
@@ -54,6 +62,30 @@ public class Usuario implements Serializable {
 	@JsonIgnore
 	@OneToMany(mappedBy="usuario")
 	private List<Propiedad> propiedades;
+
+    @Column(name = "token_verificacion", length = 100)
+    private String token;
+
+    @Column(name = "token_expiracion")
+    private LocalDateTime expiracion;
+
+    @Column(nullable = false)
+    private boolean verificado = false;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	}
+
+	@Override
+	public String getPassword() {
+		return getClave();
+	}
+
+	@Override
+	public String getUsername() {
+		return getEmail();
+	}
 
 
 }
