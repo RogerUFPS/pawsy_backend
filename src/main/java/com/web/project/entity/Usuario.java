@@ -43,7 +43,7 @@ public class Usuario implements UserDetails {
 	private String email;
 	
 	@NotBlank(message = "Una contraseña es obligatoria")
-	@Column(nullable=false, length=20)
+	@Column(nullable=false, length=100)
 	private String clave;
 
 	@NotBlank(message = "Debes identificarte con tu nombre")
@@ -56,7 +56,6 @@ public class Usuario implements UserDetails {
 	@NotBlank(message = "Debes designar si eres cuidador o cliente")
 	@Column(name="tipo_usuario", nullable=false, length=20)
 
-	@Enumerated(EnumType.STRING)
 	private String tipoUsuario;
 
 	@JsonIgnore

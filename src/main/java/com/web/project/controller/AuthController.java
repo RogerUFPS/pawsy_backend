@@ -48,7 +48,7 @@ public class AuthController {
     
 
     @PostMapping("/cambio-contra")
-    public ResponseEntity<?> cambioContra(@RequestBody ChangePasswordRequest req, @RequestBody String token) {
+    public ResponseEntity<?> cambioContra(@RequestBody ChangePasswordRequest req) {
         authService.changePassword(req);
         return ResponseEntity.ok("La contraseña se actualizo correctamente");
     }
