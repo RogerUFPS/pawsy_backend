@@ -27,13 +27,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-<<<<<<< HEAD
+
                 .requestMatchers("/auth/**", "/api/mascota/**").hasAuthority("CLIENTE")
                 .requestMatchers("/auth/**", "/api/mascota/**").hasAuthority("CUIDADOR")
                 .requestMatchers("/**").hasAuthority("ADMIN")
-=======
-                .requestMatchers("/auth/**", "/docs/**", "/api-docs/**").permitAll()
->>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
