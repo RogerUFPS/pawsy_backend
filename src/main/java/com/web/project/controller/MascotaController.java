@@ -5,7 +5,10 @@ import com.web.project.service.MascotaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,7 +26,10 @@ public class MascotaController {
 	}
 
 	// Obtener todas las mascotas
+<<<<<<< HEAD
 	@PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 	@GetMapping
 	public ResponseEntity<List<MascotaDTO>> obtenerTodas() {
 		List<MascotaDTO> mascotas = mascotaService.listAll();
@@ -31,7 +37,10 @@ public class MascotaController {
 	}
 
 	// Obtener una mascota por ID
+<<<<<<< HEAD
 	@PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 	@GetMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> obtenerMascotaPorId(@PathVariable Integer id) {
 		MascotaDTO mascota = mascotaService.findById(id);

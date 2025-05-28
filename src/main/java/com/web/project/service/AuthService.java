@@ -5,12 +5,23 @@ import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
 import com.web.project.dto.RegisterRequest;
 import com.web.project.dto.RegisterResponse;
+<<<<<<< HEAD
+=======
+import com.web.project.dto.VerificationResponse;
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 import java.util.UUID;
 
+=======
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.naming.AuthenticationException;
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -101,7 +112,11 @@ public class AuthService {
         return new RegisterResponse(token);
     }
 
+<<<<<<< HEAD
     public void verificarEmail(String UUID, String email) {
+=======
+    public VerificationResponse verificar(String UUID, String email) {
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
         
         if(!usuarioRepo.findByEmail(email).isPresent()) {
             throw new RuntimeException("El usuario no existe");    
@@ -112,6 +127,7 @@ public class AuthService {
             usuarioRepo.delete(s);
             throw new RuntimeException("El tiempo de expiracion del token ya pasó!"); 
         }
+<<<<<<< HEAD
 
         if(!s.getToken().equals(UUID)) {
 
@@ -119,6 +135,11 @@ public class AuthService {
 
         s.setVerificado(true);
         usuarioRepo.save(s);
+=======
+        s.setVerificado(true);
+        usuarioRepo.save(s);
+        return new VerificationResponse(UUID);
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     }
 
     public void changePassword(ChangePasswordRequest request) {
@@ -137,6 +158,7 @@ public class AuthService {
         usuarioRepo.save(usuario);
     }
 
+<<<<<<< HEAD
     public void recoverPassword(String email) {
 
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
@@ -163,6 +185,8 @@ public class AuthService {
         usuarioRepo.save(usuario);
     }
 
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     public void reenviarToken(String email) {
 
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));

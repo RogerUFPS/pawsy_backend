@@ -15,6 +15,7 @@ public class ServiceEmail {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setTo(to);
         mensaje.setSubject("Verifica tu cuenta");
+<<<<<<< HEAD
         mensaje.setText("Haz clic aquí para verificar: http://localhost:8081/auth/verificar-email?UUID=" + token + "&email="+to);
         mailSender.send(mensaje);
     }
@@ -27,4 +28,9 @@ public class ServiceEmail {
         mailSender.send(mensaje);
     }
 
+=======
+        mensaje.setText("Haz clic aquí para verificar: http://tusitio.com/verificar?token=" + token);
+        mailSender.send(mensaje);
+    }
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 }

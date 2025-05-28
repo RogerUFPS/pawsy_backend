@@ -6,7 +6,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
 import org.springframework.web.bind.annotation.*;
 
 import com.web.project.entity.Usuario;
@@ -21,26 +24,39 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     @PostMapping
     public ResponseEntity<?> crearUsuario(@Valid @RequestBody Usuario usuario) {
     	
     	try {
+<<<<<<< HEAD
             usuarioService.crearUsuario(usuario);
+=======
+            Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
             return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.CONFLICT);
         }
     }
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     @GetMapping
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
         return new ResponseEntity<>(usuarioService.obtenerTodosLosUsuarios(), HttpStatus.OK);
     }
 
+<<<<<<< HEAD
 
     @PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Integer id) {
         return usuarioService.obtenerUsuarioPorId(id)
@@ -57,7 +73,10 @@ public class UsuarioController {
         return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
     }
 
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ADMIN')")
+=======
+>>>>>>> 661b8442d2d6ea78fb5c0006aa4ecc5e30213384
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarUsuario(@PathVariable Integer id) {
         if (usuarioService.eliminarUsuario(id)) {
