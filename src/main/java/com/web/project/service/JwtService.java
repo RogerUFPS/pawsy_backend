@@ -36,9 +36,6 @@ public class JwtService {
     // public String generateToken(UserDetails userDetails) {
     //     return generateToken(Map.of(), userDetails);
     // }
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(Map.of(), userDetails);
-    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

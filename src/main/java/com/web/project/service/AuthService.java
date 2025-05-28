@@ -5,9 +5,6 @@ import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
 import com.web.project.dto.RegisterRequest;
 import com.web.project.dto.RegisterResponse;
-
-import com.web.project.dto.VerificationResponse;
-
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
