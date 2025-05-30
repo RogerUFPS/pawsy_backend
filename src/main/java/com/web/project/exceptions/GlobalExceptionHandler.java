@@ -1,43 +1,38 @@
 package com.web.project.exceptions;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 
-@RestControllerAdvice
+import java.util.HashMap;
+import java.util.Map;
+
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Captura errores de validación de campos
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleNoSuchElementException(NoSuchElementException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("mensaje", ex.getMessage());
-        response.put("estado", HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    // Captura errores de lógica de negocio (como email duplicado)
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("mensaje", ex.getMessage());
-        response.put("estado", HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    // Captura cualquier otro error inesperado
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("mensaje", "Error interno del servidor: " + ex.getMessage());
-        response.put("estado", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-

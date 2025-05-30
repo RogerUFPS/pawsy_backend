@@ -1,59 +1,64 @@
 package com.web.project.entity;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
-@Table(name="usuarios")
-@AllArgsConstructor
+@Table(name = "usuarios")
 @Data
-@NoArgsConstructor	
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Usuario implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@SequenceGenerator(name="USUARIOS_ID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="USUARIOS_ID_GENERATOR")
-	@Column(unique=true, nullable=false)
-	private Integer id;
+    @Id
+    @SequenceGenerator(name = "USUARIOS_ID_GENERATOR", sequenceName = "usuarios_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USUARIOS_ID_GENERATOR")
+    @Column(unique = true, nullable = false)
+    private Integer id;
 
-	@Column(length=200)
-	private String direccion;
-	
-	@NotBlank(message = "El email es obligatorio")
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(max = 100)
+    @Column(nullable = false, length = 100)
+    private String nombre;
+
+    @NotBlank(message = "La clave es obligatoria")
+    @Size(max = 100)
+    @Column(nullable = false, length = 100)
+    private String clave;
+
+    @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")
-	@Column(nullable=false, length=150)
-	private String email;
-	
-	
-	@Column(nullable=false, length=100)
-	private String nombre;
-	
-	@NotBlank(message = "El telefono es obligatorio")
-	@Column(nullable=false, length=20)
-	private String telefono;
+    @Size(max = 150)
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
 
-	@Column(name="tipo_usuario", nullable=false, length=20)
-	private String tipoUsuario;
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Size(max = 20)
+    @Column(nullable = false, length = 20)
+    private String telefono;
 
-	@JsonIgnore
-	@OneToMany(mappedBy="usuario")
-	private List<Mascota> mascotas;
+    @Size(max = 200)
+    @Column(length = 200)
+    private String direccion;
 
-	@JsonIgnore
-	@OneToMany(mappedBy="usuario")
-	private List<Propiedad> propiedades;
+    @NotBlank(message = "El tipo de usuario es obligatorio")
+    @Column(name = "tipo_usuario", nullable = false, length = 20)
+    private String tipoUsuario;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mascota> mascotas;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Propiedad> propiedades;
 }
