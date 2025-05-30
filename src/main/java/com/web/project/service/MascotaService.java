@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.web.project.entity.Mascota;
 import com.web.project.entity.TipoMascota;
 import com.web.project.entity.Usuario;
-import com.web.project.entity.dto.MascotaDTO;
+import com.web.project.dto.MascotaDTO;
 import com.web.project.repository.MascotaRepository;
 import com.web.project.repository.TipoMascotaRepository;
 import com.web.project.repository.UsuarioRepository;

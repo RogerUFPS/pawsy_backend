@@ -1,6 +1,6 @@
 package com.web.project.controller;
 
-import com.web.project.entity.dto.MascotaDTO;
+import com.web.project.dto.MascotaDTO;
 import com.web.project.service.MascotaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/mascota")
+@RequestMapping("/api/mascota")
 public class MascotaController {
 
 	private final MascotaService mascotaService;
