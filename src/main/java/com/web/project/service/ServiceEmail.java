@@ -15,7 +15,16 @@ public class ServiceEmail {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setTo(to);
         mensaje.setSubject("Verifica tu cuenta");
-        mensaje.setText("Haz clic aquí para verificar: http://tusitio.com/verificar?token=" + token);
+        mensaje.setText("Haz clic aquí para verificar: http://localhost:8081/auth/verificar-email?UUID=" + token + "&email="+to);
         mailSender.send(mensaje);
     }
+
+    public void recuperarContra(String email, String token) {
+        SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setTo(email);
+        mensaje.setSubject("Recupera tu contraseña");
+        mensaje.setText("Haz clic aqui para cambiar tu contra: http://localhost:8081/auth/cambio-contra?UUID="+token +"&email="+email);
+        mailSender.send(mensaje);
+    }
+
 }

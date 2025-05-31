@@ -5,15 +5,12 @@ import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
 import com.web.project.dto.RegisterRequest;
 import com.web.project.dto.RegisterResponse;
-import com.web.project.dto.VerificationResponse;
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
 
-import javax.naming.AuthenticationException;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -104,8 +101,7 @@ public class AuthService {
         return new RegisterResponse(token);
     }
 
-    public VerificationResponse verificar(String UUID, String email) {
-        
+    public void verificarEmail(String UUID, String email) {
         if(!usuarioRepo.findByEmail(email).isPresent()) {
             throw new RuntimeException("El usuario no existe");    
         } 
@@ -115,9 +111,13 @@ public class AuthService {
             usuarioRepo.delete(s);
             throw new RuntimeException("El tiempo de expiracion del token ya pasó!"); 
         }
+
+        if(!s.getToken().equals(UUID)) {
+            throw new RuntimeException("El token es invalido");
+        }
+
         s.setVerificado(true);
         usuarioRepo.save(s);
-        return new VerificationResponse(UUID);
     }
 
     public void changePassword(ChangePasswordRequest request) {
@@ -133,6 +133,32 @@ public class AuthService {
         }
 
         usuario.setClave(passwordEncoder.encode(request.getNewPassword()));
+        usuarioRepo.save(usuario);
+    }
+
+    public void recoverPassword(String email) {
+
+        Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
+
+        if(!usuario.isVerificado()){
+            throw new IllegalStateException("El usuario no esta verificado, no puede recuperar su contraseña");
+        }
+
+        usuario.setToken(UUID.randomUUID().toString());
+        usuarioRepo.save(usuario);
+        em.recuperarContra(email, usuario.getToken());
+    }
+
+    public void confirmarRecuperacion(String email, String UUID, String nuevaContra) {
+
+        Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
+
+        if(!usuario.getToken().equals(UUID)) {
+            throw new IllegalArgumentException("Incorrecto, verificacion invalida");
+        }
+
+        usuario.setClave(passwordEncoder.encode(nuevaContra));
+        usuario.setToken(null);
         usuarioRepo.save(usuario);
     }
 

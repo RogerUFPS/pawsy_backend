@@ -1,11 +1,12 @@
 package com.web.project.entity;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor	
-public class Usuario implements Serializable, UserDetails {
+public class Usuario implements UserDetails {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -41,18 +43,19 @@ public class Usuario implements Serializable, UserDetails {
 	private String email;
 	
 	@NotBlank(message = "Una contraseña es obligatoria")
-	@Column(nullable=false, length=20)
+	@Column(nullable=false, length=100)
 	private String clave;
 
 	@NotBlank(message = "Debes identificarte con tu nombre")
 	@Column(nullable=false, length=100)
 	private String nombre;
 	
-	@Column(nullable=false, length=20)
+	@Column(nullable=true, length=20)
 	private String telefono;
 
 	@NotBlank(message = "Debes designar si eres cuidador o cliente")
 	@Column(name="tipo_usuario", nullable=false, length=20)
+
 	private String tipoUsuario;
 
 	@JsonIgnore
@@ -74,7 +77,7 @@ public class Usuario implements Serializable, UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return List.of(new SimpleGrantedAuthority("ROLE_" + tipoUsuario));
 	}
 
 	@Override
