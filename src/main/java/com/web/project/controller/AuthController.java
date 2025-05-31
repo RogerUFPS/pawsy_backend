@@ -4,7 +4,6 @@ import com.web.project.dto.AuthRequest;
 import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
 import com.web.project.dto.RegisterRequest;
-import com.web.project.dto.RegisterResponse;
 import com.web.project.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +21,8 @@ public class AuthController {
     public AuthController(AuthService authService) { this.authService = authService; }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest req) {
-
-        RegisterResponse au = authService.register(req);
-        return ResponseEntity.ok(au);
+    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
+        return authService.register(req);
     }
 
     @PostMapping("/login")

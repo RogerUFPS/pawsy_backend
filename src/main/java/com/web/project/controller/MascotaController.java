@@ -2,8 +2,8 @@ package com.web.project.controller;
 
 import com.web.project.dto.MascotaDTO;
 import com.web.project.service.MascotaService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +16,45 @@ import java.util.Map;
 @RequestMapping("/api/mascota")
 public class MascotaController {
 
-	private final MascotaService mascotaService;
+	@Autowired
+	private MascotaService mascotaService;
 
-	public MascotaController(MascotaService mascotaService) {
-		this.mascotaService = mascotaService;
+	// Obtener mascotas por usuario
+	@PreAuthorize("hasRole('CLIENTE')")
+	@GetMapping("/usuario/{clienteId}")
+	public ResponseEntity<?> obtenerPorUsuario() {
+        List<MascotaDTO> mascotas = mascotaService.listarPorCliente();
+        return ResponseEntity.ok(mascotas);
+	}
+
+	// Crear una nueva mascota
+	@PreAuthorize("hasRole('CLIENTE')")
+	@PostMapping
+	public ResponseEntity<MascotaDTO> crearMascota(@RequestBody MascotaDTO dto) {
+		return ResponseEntity.ok(mascotaService.create(dto));
+		// Map<String, Object> response = new HashMap<>();
+		// response.put("mensaje", "Mascota creada exitosamente.");
+		// response.put("datos", nuevaMascota);
+		//return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+	}
+
+	// Actualizar una mascota existente
+	@PreAuthorize("hasRole('CLIENTE')")
+	@PutMapping("/{id}")
+	public ResponseEntity<MascotaDTO> actualizarMascota(@RequestBody MascotaDTO dto) {
+		MascotaDTO mascotaActualizada = mascotaService.update(dto);
+		// Map<String, Object> response = new HashMap<>();
+		// response.put("mensaje", "Mascota actualizada correctamente.");
+		// response.put("datos", mascotaActualizada);
+		return ResponseEntity.ok(mascotaActualizada);
+	}
+
+	// Eliminar una mascota
+	@PreAuthorize("hasRole('CLIENTE')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> eliminarMascota(@RequestParam Integer id) {
+        return mascotaService.delete(id);
 	}
 
 	// Obtener todas las mascotas
@@ -39,53 +74,5 @@ public class MascotaController {
 		response.put("mensaje", "Mascota encontrada correctamente.");
 		response.put("datos", mascota);
 		return ResponseEntity.ok(response);
-	}
-
-	// Obtener mascotas por usuario
-	@PreAuthorize("hasRole('CLIENTE')")
-	@GetMapping("/usuario/{clienteId}")
-	public ResponseEntity<?> obtenerPorUsuario(@PathVariable Integer clienteId) {
-		if (clienteId != null) {
-            List<MascotaDTO> mascotas = mascotaService.listarPorUsuario(clienteId);
-            return ResponseEntity.ok(mascotas);
-        }else {
-            return new ResponseEntity<>("El cliente no existe", HttpStatus.NOT_FOUND);
-        }
-	}
-
-	// Crear una nueva mascota
-	@PreAuthorize("hasRole('CLIENTE')")
-	@PostMapping
-	public ResponseEntity<Map<String, Object>> crearMascota(@Valid @RequestBody MascotaDTO dto) {
-		MascotaDTO nuevaMascota = mascotaService.create(dto);
-		Map<String, Object> response = new HashMap<>();
-		response.put("mensaje", "Mascota creada exitosamente.");
-		response.put("datos", nuevaMascota);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
-
-	// Actualizar una mascota existente
-	@PreAuthorize("hasRole('CLIENTE')")
-	@PutMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> actualizarMascota(@PathVariable Integer id,
-			@Valid @RequestBody MascotaDTO dto) {
-		MascotaDTO mascotaActualizada = mascotaService.update(id, dto);
-		Map<String, Object> response = new HashMap<>();
-		response.put("mensaje", "Mascota actualizada correctamente.");
-		response.put("datos", mascotaActualizada);
-		return ResponseEntity.ok(response);
-	}
-
-	// Eliminar una mascota
-	@PreAuthorize("hasRole('CLIENTE')")
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> eliminarMascota(@PathVariable Integer id) {
-        Map<String, String> response = new HashMap<>();
-        if (mascotaService.delete(id)){
-            response.put("mensaje", "Mascota eliminada exitosamente.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        response.put("mensaje", "Mascota no encontrada.");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 }

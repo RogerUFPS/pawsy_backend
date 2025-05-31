@@ -4,7 +4,6 @@ import com.web.project.dto.AuthRequest;
 import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
 import com.web.project.dto.RegisterRequest;
-import com.web.project.dto.RegisterResponse;
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -64,7 +64,7 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    public RegisterResponse register(RegisterRequest request) {
+    public ResponseEntity<?> register(RegisterRequest request) {
 
         if (usuarioRepo.findByEmail(request.getEmail()).isPresent()) {
 
@@ -97,8 +97,7 @@ public class AuthService {
 
         usuarioRepo.save(nuevoUsuario);
 
-        String token = jwtService.generateToken(nuevoUsuario);
-        return new RegisterResponse(token);
+        return ResponseEntity.ok("Se ha registrado correctamente el usuario");
     }
 
     public void verificarEmail(String UUID, String email) {

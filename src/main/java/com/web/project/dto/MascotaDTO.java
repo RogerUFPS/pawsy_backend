@@ -17,7 +17,7 @@ public class MascotaDTO {
     @Size(max = 50, message = "El nombre no debe superar los 50 caracteres")
     private String nombre;
 
-    @NotBlank(message = "La descripción es obligatoria")
+    //@NotBlank(message = "La descripción es obligatoria")
     @Size(max = 255, message = "La descripción no debe superar los 255 caracteres")
     private String descripcion;
 

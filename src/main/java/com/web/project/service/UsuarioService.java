@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.CuidadorDTO;
@@ -18,14 +20,11 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
-    	
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
-    	
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Se ha creado el usuario correctamente");
-        
     }
 
     public List<Usuario> obtenerTodosLosUsuarios() {
@@ -47,9 +46,14 @@ public class UsuarioService {
                 .build();
     }
 
-    public ResponseEntity<?> actualizarUsuario(Integer id, Usuario ua) {
+    //Peticion realizada cuando el usuario este logeado
+    public ResponseEntity<?> actualizarUsuario(Usuario ua) {
         
-        Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).get();
 
         if(!a.isVerificado()) {
             throw new RuntimeException("El usuario no esta verificado");
@@ -67,6 +71,7 @@ public class UsuarioService {
 
     }
 
+    //Peticion por admin
     public ResponseEntity<?> eliminarUsuario(Integer id) {
 
         Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
@@ -75,9 +80,14 @@ public class UsuarioService {
         return ResponseEntity.ok("Se ha eliminado el usuario correctamente");
     }
 
-    public ResponseEntity<?> convertirCuidador(Integer id, String telefono) {
+    //Peticion realizada cuando el usuario esta logeado
+    public ResponseEntity<?> convertirCuidador(String telefono) {
         
-        Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).get();
         
         if(!a.isVerificado()) {
             throw new RuntimeException("El usuario no esta verificado, no puede convertirse en cuidador");

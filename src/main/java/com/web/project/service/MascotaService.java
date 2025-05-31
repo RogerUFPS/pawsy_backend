@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.entity.Mascota;
@@ -16,21 +20,19 @@ import com.web.project.repository.UsuarioRepository;
 
 @Service
 public class MascotaService {
-	private final MascotaRepository mascotaRepository;
-	private final UsuarioRepository usuarioRepository;
-	private final TipoMascotaRepository tipoMascotaRepository;
 	
-	public MascotaService(MascotaRepository mascotaRepository, UsuarioRepository usuarioRepository, TipoMascotaRepository tipoMascotaRepository) {
-		this.mascotaRepository = mascotaRepository;
-		this.usuarioRepository = usuarioRepository;
-		this.tipoMascotaRepository = tipoMascotaRepository;
-	}
+    @Autowired
+    private MascotaRepository mascotaRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private TipoMascotaRepository tipoMascotaRepository;
 	
 	public List<MascotaDTO> listAll(){
 		return mascotaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-    public List<MascotaDTO> listarPorUsuario(Integer clienteId) {
+    public List<MascotaDTO> listarPorUsuario_Admin(Integer clienteId) {
         // Verifica si el usuario existe
         if (!usuarioRepository.existsById(clienteId)) {
             throw new NoSuchElementException("El cliente con ID " + clienteId + " no existe.");
@@ -42,22 +44,27 @@ public class MascotaService {
                 .collect(Collectors.toList());
     }
 
-
-    public MascotaDTO create(MascotaDTO dto) {
-        if (dto.getClienteId() == null) {
-            throw new IllegalArgumentException("El campo clienteId no puede ser nulo.");
+    //Peticion realizada una vez logeado
+    public List<MascotaDTO> listarPorCliente() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
         }
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+        return mascotaRepository.findByUsuarioId(u.getId()).stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    //Peticion realizada una vez logeado
+    public MascotaDTO create(MascotaDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
         }
-
-        // if (mascotaRepository.existsByNombreAndUsuario_Id(dto.getNombre(), dto.getClienteId())) {
-        //     throw new IllegalArgumentException("El cliente ya tiene una mascota con ese nombre.");
-        // }
-
-        Usuario cliente = usuarioRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));
 
         TipoMascota tipo;
         if (dto.getTipoId() != null) {
@@ -67,44 +74,49 @@ public class MascotaService {
             throw new IllegalArgumentException("El campo tipo de mascota es obligatorio.");
         }
 
-        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 100){
+        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
             throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
         }
 
-        if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
-            throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
-        }
+        // if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
+        //     throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
+        // }
 
         Mascota mascota = new Mascota();
         mascota.setNombre(dto.getNombre());
         mascota.setEdad(dto.getEdad());
         mascota.setDescripcion(dto.getDescripcion());
-        mascota.setUsuario(cliente);
+        mascota.setUsuario(u);
         mascota.setTipoMascota(tipo);
 
         return toDTO(mascotaRepository.save(mascota));
     }
 
-    public MascotaDTO update(Integer id, MascotaDTO dto) {
-        Mascota mascota = mascotaRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + id + " no existe."));
+    //Peticion realizada una vez logeado
+    public MascotaDTO update(MascotaDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+
+        Mascota mascota = mascotaRepository.findById(dto.getId())
+                .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + dto.getId() + " no existe."));
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
         }
 
-        if (dto.getEdad() == null || dto.getEdad() < 0){
+        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
             throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
         }
 
-        if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
-            throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
-        }
-
-        Integer clienteId = (dto.getClienteId() != null) ? dto.getClienteId() : mascota.getUsuario().getId();
+        // if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
+        //     throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
+        // }
 
         // Validar unicidad del nombre por cliente, ignorando la mascota actual
-        if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), clienteId, id)) {
+        if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), u.getId(), dto.getId())) {
             throw new IllegalArgumentException("Ya existe otra mascota con ese nombre para este cliente.");
         }
 
@@ -114,12 +126,6 @@ public class MascotaService {
             mascota.setTipoMascota(tipo);
         }
 
-        if (dto.getClienteId() != null) {
-            Usuario cliente = usuarioRepository.findById(dto.getClienteId())
-                    .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));
-            mascota.setUsuario(cliente);
-        }
-
         mascota.setNombre(dto.getNombre().trim());
         mascota.setEdad(dto.getEdad());
         mascota.setDescripcion(dto.getDescripcion().trim());
@@ -127,13 +133,23 @@ public class MascotaService {
         return toDTO(mascotaRepository.save(mascota));
     }
 
+    //Peticion realizada una vez logeado
+    public ResponseEntity<?> delete(Integer id) {
 
-    public boolean delete(Integer id) {
-        if (mascotaRepository.existsById(id)) {
-            mascotaRepository.deleteById(id);
-            return true;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
         }
-        return false;
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+        
+        if(!mascotaRepository.findById(id).isPresent()) throw new RuntimeException("Mascota no existe");
+
+        if(!u.getMascotas().contains(mascotaRepository.findById(id).get())) throw new RuntimeException("Esta mascota no existe para este usuario");
+        
+        Mascota m = mascotaRepository.findById(id).get();
+        mascotaRepository.delete(m);
+
+        return ResponseEntity.ok("La mascota se ha eliminado correctamente");
     }
 	
 	

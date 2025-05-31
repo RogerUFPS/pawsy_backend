@@ -27,7 +27,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('CLIENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@RequestParam Integer id, @RequestBody Usuario usuario) {
-        return usuarioService.actualizarUsuario(id, usuario);
+        return usuarioService.actualizarUsuario(usuario);
     }
 
     @PreAuthorize("hasRole('CLIENTE')")
@@ -39,7 +39,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('CLIENTE')")
     @PutMapping("/to-cuidador")
     public ResponseEntity<?> serCuidador(@RequestParam Integer id, @RequestParam String telefono) {
-        return usuarioService.convertirCuidador(id, telefono);
+        return usuarioService.convertirCuidador(telefono);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
