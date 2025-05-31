@@ -1,4 +1,4 @@
-package com.web.project.config;
+package com.web.project.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
