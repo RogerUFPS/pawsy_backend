@@ -11,17 +11,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Table(name="propiedades")
 @AllArgsConstructor
-@Data
 @NoArgsConstructor
+@Data
 public class Propiedad implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="PROPIEDADES_ID_GENERATOR" )
+	@SequenceGenerator(name="PROPIEDADES_ID_GENERATOR")
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PROPIEDADES_ID_GENERATOR")
 	@Column(unique=true, nullable=false)
 	private Integer id;
@@ -41,23 +40,19 @@ public class Propiedad implements Serializable {
 	@Column(name="precio_por_noche", nullable=false, precision=10, scale=2)
 	private BigDecimal precioPorNoche;
 
-	//bi-directional many-to-one association to FotosPropiedade
+	@OneToMany(mappedBy="propiedad", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
-	@OneToMany(mappedBy="propiedade")
-	private List<FotoPropiedad> fotosPropiedades;
+	private List<FotoPropiedad> fotos;
 
-	//bi-directional many-to-one association to Usuario
 	@ManyToOne
 	@JoinColumn(name="cuidador_id", nullable=false)
 	private Usuario usuario;
 
-	//bi-directional many-to-one association to Reserva
+	@OneToMany(mappedBy="propiedad")
 	@JsonIgnore
-	@OneToMany(mappedBy="propiedade")
 	private List<Reserva> reservas;
 
-	//bi-directional many-to-many association to Servicio
 	@ManyToMany(mappedBy="propiedades")
 	private List<Servicio> servicios;
-
 }
+

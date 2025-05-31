@@ -41,7 +41,7 @@ public class Reserva implements Serializable {
 	//bi-directional many-to-one association to Propiedade
 	@ManyToOne
 	@JoinColumn(name="propiedad_id", nullable=false)
-	private Propiedad propiedade;
+	private Propiedad propiedad;
 
 	//bi-directional many-to-many association to Servicio
 	@ManyToMany(mappedBy="reservas")
