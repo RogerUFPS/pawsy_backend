@@ -25,18 +25,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/mascota/**").hasAuthority("CUIDADOR")
-                .requestMatchers("/api/mascota/**").hasAuthority("CLIENTE")
-                .requestMatchers("/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .formLogin(login -> login.disable());
+                        .requestMatchers("/auth/**", "/docs/**", "/api-docs/**", "/api/tipos-mascota/**",
+                                "/api/propiedades/**")
+                        .permitAll()
+                        .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(login -> login.disable());
 
         return http.build();
     }
