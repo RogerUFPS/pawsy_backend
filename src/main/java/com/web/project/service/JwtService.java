@@ -23,8 +23,16 @@ public class JwtService {
 
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
 
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .claim("rol", userDetails.getAuthorities())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
-    
+
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
