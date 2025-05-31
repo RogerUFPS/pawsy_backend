@@ -1,11 +1,13 @@
 package com.web.project.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.web.project.dto.CuidadorDTO;
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
@@ -15,53 +17,76 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Usuario crearUsuario(Usuario usuario) {
+    public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new IllegalArgumentException("El email ya está registrado");
-        }
-
-        if (usuarioRepository.existsByTelefono(usuario.getTelefono())) {
-            throw new IllegalArgumentException("El teléfono ya está registrado");
+            throw new RuntimeException("El email ya está registrado");
         }
     	
-        return usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok("Se ha creado el usuario correctamente");
+        
     }
 
     public List<Usuario> obtenerTodosLosUsuarios() {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> obtenerUsuarioPorId(Integer id) {
-        return usuarioRepository.findById(id);
+    public ResponseEntity<List<CuidadorDTO>> obtenerCuidadores() {
+        List<Usuario> s = usuarioRepository.findByTipoUsuario("CUIDADOR");
+        return ResponseEntity.ok(s.stream().map(this::toDTO).collect(Collectors.toList()));
     }
 
-    public Usuario actualizarUsuario(Integer id, Usuario usuarioActualizado) {
-    	
-    	
-    	if(usuarioActualizado.getNombre() == null) {
-    		
-    	}
-    	
-    	try {
-	        return usuarioRepository.findById(id).map(usuario -> {
-	            usuario.setNombre(usuarioActualizado.getNombre());
-	            usuario.setEmail(usuarioActualizado.getEmail());
-	            usuario.setDireccion(usuarioActualizado.getDireccion());
-	            usuario.setTelefono(usuarioActualizado.getTelefono());
-	            usuario.setTipoUsuario(usuarioActualizado.getTipoUsuario());
-	            return usuarioRepository.save(usuario);
-	        }).orElse(null);
-    	}catch(Exception e) {
-    		return null;
-    	}
+    private CuidadorDTO toDTO(Usuario u) {
+        return CuidadorDTO.builder()
+                .id(u.getId())
+                .nombre(u.getNombre())
+                .email(u.getEmail())
+                .telefono(u.getTelefono())
+                .propiedades(u.getPropiedades())
+                .build();
     }
 
-    public boolean eliminarUsuario(Integer id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return true;
+    public ResponseEntity<?> actualizarUsuario(Integer id, Usuario ua) {
+        
+        Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+
+        if(!a.isVerificado()) {
+            throw new RuntimeException("El usuario no esta verificado");
         }
-        return false;
+
+        a.setNombre(ua.getNombre());
+        a.setEmail(ua.getEmail());
+        //a.setDireccion(ua.getDireccion());
+        a.setTelefono(ua.getTelefono());
+        //a.setDireccion(ua.getDireccion());
+        a.setTipoUsuario(ua.getTipoUsuario());
+        usuarioRepository.save(a);
+
+        return ResponseEntity.ok("Se ha actualizado el usuario");
+
+    }
+
+    public ResponseEntity<?> eliminarUsuario(Integer id) {
+
+        Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        usuarioRepository.delete(a);
+
+        return ResponseEntity.ok("Se ha eliminado el usuario correctamente");
+    }
+
+    public ResponseEntity<?> convertirCuidador(Integer id, String telefono) {
+        
+        Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        
+        if(!a.isVerificado()) {
+            throw new RuntimeException("El usuario no esta verificado, no puede convertirse en cuidador");
+        }
+        //a.setDireccion(direccion);
+        a.setTelefono(telefono);
+        a.getRoles().add("CUIDADOR");
+        usuarioRepository.save(a);
+    
+        return ResponseEntity.ok("Se ha convertido en un cuidador");
     }
 }

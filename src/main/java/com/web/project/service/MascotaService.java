@@ -52,9 +52,9 @@ public class MascotaService {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
         }
 
-        if (mascotaRepository.existsByNombreAndUsuario_Id(dto.getNombre(), dto.getClienteId())) {
-            throw new IllegalArgumentException("El cliente ya tiene una mascota con ese nombre.");
-        }
+        // if (mascotaRepository.existsByNombreAndUsuario_Id(dto.getNombre(), dto.getClienteId())) {
+        //     throw new IllegalArgumentException("El cliente ya tiene una mascota con ese nombre.");
+        // }
 
         Usuario cliente = usuarioRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new NoSuchElementException("El cliente con ID " + dto.getClienteId() + " no existe."));

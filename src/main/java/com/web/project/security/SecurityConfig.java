@@ -28,10 +28,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/auth/**", "/api-docs", "docs/**", "/**").permitAll()
-               // .requestMatchers("/api/mascota/**").hasAuthority("CUIDADOR")
-                //.requestMatchers("/api/mascota/**").hasAuthority("CLIENTE")
-               // .requestMatchers("/**").hasAuthority("ADMIN")
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/mascota/**").hasAuthority("CUIDADOR")
+                .requestMatchers("/api/mascota/**").hasAuthority("CLIENTE")
+                .requestMatchers("/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

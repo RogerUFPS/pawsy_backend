@@ -3,6 +3,7 @@ package com.web.project.entity;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,8 +35,8 @@ public class Usuario implements UserDetails {
 	@Column(unique=true, nullable=false)
 	private Integer id;
 
-	@Column(length=200)
-	private String direccion;
+	// @Column(length=200)
+	// private String direccion;
 	
 	@NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")
@@ -75,9 +76,13 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private boolean verificado = false;
 
+	private List<String> roles;
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority("ROLE_" + tipoUsuario));
+		return roles.stream()
+        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+        .collect(Collectors.toList());
 	}
 
 	@Override
