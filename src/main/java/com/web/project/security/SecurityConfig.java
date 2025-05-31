@@ -32,6 +32,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/mascota/**").hasAuthority("CUIDADOR")
                 .requestMatchers("/api/mascota/**").hasAuthority("CLIENTE")
                 .requestMatchers("/**").hasAuthority("ADMIN")
+
+                .requestMatchers("/auth/**", "/docs/**", "/api-docs/**", "/api/mascota", "/api/mascota/usuario/**", "/api/tipos-mascota/**", "/api/propiedades/**").permitAll()
+
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

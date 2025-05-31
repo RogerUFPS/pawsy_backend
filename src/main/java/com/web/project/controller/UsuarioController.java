@@ -11,6 +11,8 @@ import com.web.project.dto.CuidadorDTO;
 import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioController {

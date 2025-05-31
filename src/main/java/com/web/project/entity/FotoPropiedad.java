@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;	
 
-/**
- * The persistent class for the fotos_propiedades database table.
- * 
- */
 @Data
 @Entity
 @Table(name="fotos_propiedades")
@@ -34,6 +30,6 @@ public class FotoPropiedad implements Serializable {
 	//bi-directional many-to-one association to Propiedade
 	@ManyToOne
 	@JoinColumn(name="propiedad_id", nullable=false)
-	private Propiedad propiedade;
+	private Propiedad propiedad;
 
 }

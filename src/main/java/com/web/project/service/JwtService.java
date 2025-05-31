@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -20,6 +20,12 @@ public class JwtService {
     private static final String SECRET_KEY = Base64.getEncoder().encodeToString("6A7D5F9EAF9F7C3F1C4B9A7E3D9E2F8A6C5E7B3C9D2A1F0E9B3D7C8A6E1F4D7B".getBytes());
 
     public String generateToken(UserDetails userDetails) {
+
+        Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
+
+    }
+    
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 
         Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
 

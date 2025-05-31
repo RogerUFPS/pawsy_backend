@@ -56,7 +56,6 @@ public class Usuario implements UserDetails {
 
 	@NotBlank(message = "Debes designar si eres cuidador o cliente")
 	@Column(name="tipo_usuario", nullable=false, length=20)
-
 	private String tipoUsuario;
 
 	@JsonIgnore

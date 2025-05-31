@@ -35,7 +35,7 @@ public class Mascota implements Serializable {
 
 	//bi-directional many-to-one association to FotosMascota
 	@JsonIgnore
-	@OneToMany(mappedBy="mascota")
+	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<FotosMascota> fotosMascotas;
 
 	//bi-directional many-to-one association to TipoMascota
