@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.PropiedadDTO;
+import com.web.project.dto.PropiedadResponse;
+import com.web.project.dto.ServicioResponse;
+import com.web.project.dto.UsuarioResumen;
 import com.web.project.entity.Propiedad;
 import com.web.project.entity.Servicio;
 import com.web.project.entity.Usuario;
@@ -12,6 +15,7 @@ import com.web.project.repository.ServicioRepository;
 import com.web.project.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PropiedadService {
@@ -25,8 +29,8 @@ public class PropiedadService {
     @Autowired
     private ServicioRepository servicioRepository;
 
-    public List<Propiedad> listarTodas() {
-        return propiedadRepository.findAll();
+    public List<PropiedadResponse> listarPropiedades() {
+        return propiedadRepository.findAll().stream().map(this::convertirAResponse).toList();
     }
 
     public Propiedad obtenerPorId(Integer id) {
@@ -52,13 +56,13 @@ public class PropiedadService {
         propiedadRepository.save(propiedad);
     }
 
-    public Propiedad actualizar(Integer id, Propiedad propiedadActualizada) {
+    public Propiedad actualizar(Integer id, PropiedadDTO dto) {
         Propiedad propiedad = obtenerPorId(id);
-        propiedad.setNombre(propiedadActualizada.getNombre());
-        propiedad.setDescripcion(propiedadActualizada.getDescripcion());
-        propiedad.setDireccion(propiedadActualizada.getDireccion());
-        propiedad.setCapacidad(propiedadActualizada.getCapacidad());
-        propiedad.setPrecioPorNoche(propiedadActualizada.getPrecioPorNoche());
+        propiedad.setNombre(dto.getNombre());
+        propiedad.setDescripcion(dto.getDescripcion());
+        propiedad.setDireccion(dto.getDireccion());
+        propiedad.setCapacidad(dto.getCapacidad());
+        propiedad.setPrecioPorNoche(dto.getPrecioPorNoche());
 
         return propiedadRepository.save(propiedad);
     }
@@ -66,4 +70,28 @@ public class PropiedadService {
     public void eliminar(Integer id) {
         propiedadRepository.deleteById(id);
     }
+
+    public PropiedadResponse convertirAResponse(Propiedad propiedad) {
+        UsuarioResumen usuario = new UsuarioResumen(
+                propiedad.getUsuario().getId(),
+                propiedad.getUsuario().getNombre(),
+                propiedad.getUsuario().getEmail());
+
+        List<ServicioResponse> servicios = propiedad.getServicios().stream()
+                .map(servicio -> new ServicioResponse(
+                        servicio.getId(),
+                        servicio.getNombre()))
+                .collect(Collectors.toList());
+
+        return new PropiedadResponse(
+                propiedad.getId(),
+                propiedad.getNombre(),
+                propiedad.getDireccion(),
+                propiedad.getDescripcion(),
+                propiedad.getCapacidad(),
+                propiedad.getPrecioPorNoche(),
+                usuario,
+                servicios);
+    }
+
 }

@@ -25,34 +25,16 @@ public class PropiedadController {
     @Autowired
     private PropiedadService propiedadService;
 
-    @Autowired
-    private PropiedadRepository propiedadRepository;
-
-    @GetMapping("/propiedades")
+    @GetMapping
     public List<PropiedadResponse> listarPropiedades() {
-        return propiedadRepository.findAll().stream().map(propiedad -> {
-            Usuario u = propiedad.getUsuario();
-            UsuarioResumen user = new UsuarioResumen(u.getId(), u.getNombre(), u.getEmail());
-
-            List<ServicioResponse> servicios = propiedad.getServicios().stream()
-                    .map(s -> new ServicioResponse(s.getId(), s.getNombre()))
-                    .toList();
-
-            return new PropiedadResponse(
-                    propiedad.getId(),
-                    propiedad.getNombre(),
-                    propiedad.getDireccion(),
-                    propiedad.getDescripcion(),
-                    propiedad.getCapacidad(),
-                    propiedad.getPrecioPorNoche(),
-                    user,
-                    servicios);
-        }).toList();
+        return propiedadService.listarPropiedades();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Propiedad> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(propiedadService.obtenerPorId(id));
+    public ResponseEntity<PropiedadResponse> obtenerPropiedadPorId(@PathVariable Integer id) {
+        Propiedad propiedad = propiedadService.obtenerPorId(id);
+        PropiedadResponse response = propiedadService.convertirAResponse(propiedad);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -62,8 +44,11 @@ public class PropiedadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Propiedad> actualizar(@PathVariable Integer id, @RequestBody Propiedad propiedad) {
-        return ResponseEntity.ok(propiedadService.actualizar(id, propiedad));
+    public ResponseEntity<PropiedadResponse> actualizar(@PathVariable Integer id,
+            @Valid @RequestBody PropiedadDTO dto) {
+        Propiedad actualizada = propiedadService.actualizar(id, dto);
+        PropiedadResponse response = propiedadService.convertirAResponse(actualizada);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
