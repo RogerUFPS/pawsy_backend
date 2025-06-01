@@ -28,9 +28,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/**", "/docs/**", "/api-docs/**", "/api/tipos-mascota/**",
-                                "/api/propiedades/**")
-                        .permitAll()
+                        .requestMatchers("/auth/**", "/docs/**", "/api-docs/**", "/api/tipos-mascota/**", "/api/propiedades/**", "/**").permitAll()
                         .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())

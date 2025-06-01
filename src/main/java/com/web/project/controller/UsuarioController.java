@@ -18,11 +18,11 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // @PreAuthorize("hasRole('ADMIN')")
-    // @GetMapping
-    // public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
-    //     return new ResponseEntity<>(usuarioService.obtenerTodosLosUsuarios(), HttpStatus.OK);
-    // }
+    //@PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
+        return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
+    }
 
     @PreAuthorize("hasRole('CLIENTE')")
     @PutMapping("/{id}")
