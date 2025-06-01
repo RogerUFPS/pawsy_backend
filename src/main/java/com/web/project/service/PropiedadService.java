@@ -1,6 +1,8 @@
 package com.web.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.PropiedadDTO;
@@ -34,7 +36,15 @@ public class PropiedadService {
                 .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
     }
 
+    //Peticion realizada cuando se logeo
     public void crearPropiedad(PropiedadDTO dto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+
         Propiedad propiedad = new Propiedad();
         propiedad.setCapacidad(dto.getCapacidad());
         propiedad.setDescripcion(dto.getDescripcion());
@@ -42,16 +52,14 @@ public class PropiedadService {
         propiedad.setNombre(dto.getNombre());
         propiedad.setPrecioPorNoche(dto.getPrecioPorNoche());
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        propiedad.setUsuario(usuario);
-
+        propiedad.setUsuario(u);
         List<Servicio> servicios = servicioRepository.findAllById(dto.getServiciosIds());
         propiedad.setServicios(servicios);
 
         propiedadRepository.save(propiedad);
     }
 
+    //Peticion realizada cuando se logea
     public Propiedad actualizar(Integer id, Propiedad propiedadActualizada) {
         Propiedad propiedad = obtenerPorId(id);
         propiedad.setNombre(propiedadActualizada.getNombre());
