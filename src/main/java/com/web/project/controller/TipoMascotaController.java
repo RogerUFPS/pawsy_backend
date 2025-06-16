@@ -38,8 +38,8 @@ public class TipoMascotaController {
 
     // Actualizar
     @PutMapping("/{id}")
-    public ResponseEntity<TipoMascota> actualizar(@PathVariable Integer id, @RequestBody TipoMascota tipoMascota) {
-        TipoMascota actualizado = tipoMascotaService.actualizar(id, tipoMascota);
+    public ResponseEntity<TipoMascota> actualizar(@PathVariable Integer id, @RequestBody String nombre) {
+        TipoMascota actualizado = tipoMascotaService.actualizar(id, nombre);
         return ResponseEntity.ok(actualizado);
     }
 
