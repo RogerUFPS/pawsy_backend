@@ -52,17 +52,14 @@ public class UsuarioService {
 
     //Peticion realizada cuando el usuario este logeado
     public ResponseEntity<?> actualizarUsuario(Usuario ua) {
-        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
             throw new RuntimeException("El usuario no existe");    
         }
         Usuario a = usuarioRepository.findByEmail(authentication.getName()).get();
-
         if(!a.isVerificado()) {
             throw new RuntimeException("El usuario no esta verificado");
         }
-
         a.setNombre(ua.getNombre());
         a.setEmail(ua.getEmail());
         //a.setDireccion(ua.getDireccion());
