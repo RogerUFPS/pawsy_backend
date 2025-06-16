@@ -15,7 +15,7 @@ public class ServiceEmail {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setTo(to);
         mensaje.setSubject("Verifica tu cuenta");
-        mensaje.setText("Haz clic aquí para verificar: http://localhost:8081/auth/verificar-email?UUID=" + token + "&email="+to);
+        mensaje.setText("Haz clic aquí para verificar: https://api101.proyectos.fireploy.online/auth/verificar-email?UUID=" + token + "&email="+to);
         mailSender.send(mensaje);
     }
 
@@ -23,7 +23,7 @@ public class ServiceEmail {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setTo(email);
         mensaje.setSubject("Recupera tu contraseña");
-        mensaje.setText("Haz clic aqui para cambiar tu contra: http://localhost:8081/auth/cambio-contra?UUID="+token +"&email="+email);
+        mensaje.setText("Haz clic aqui para cambiar tu contra: https://api101.proyectos.fireploy.online/auth/cambio-contra?UUID="+token +"&email="+email);
         mailSender.send(mensaje);
     }
 

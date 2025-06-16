@@ -74,11 +74,12 @@ public class AuthService {
 
                 if(ex.getExpiracion().isBefore(LocalDateTime.now())) {
                     usuarioRepo.delete(ex);
+                    throw new RuntimeException("Se ha eliminado el usuario por pasarse el tiempo del token, registrese nuevamente");
                 } else {
                     throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
                 }
             } else {
-                throw new RuntimeException("El usuario ya existe.");
+                throw new RuntimeException("El usuario ya existe, se eliminó para que pueda registrarse nuevamente.");
             }
         }
 

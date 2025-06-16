@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.web.project.dto.CuidadorDTO;
 import com.web.project.entity.Usuario;
+import com.web.project.repository.MascotaRepository;
 import com.web.project.repository.UsuarioRepository;
 
 @Service
@@ -18,6 +19,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private MascotaRepository mascotaRepository;
 
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
@@ -75,6 +79,8 @@ public class UsuarioService {
     public ResponseEntity<?> eliminarUsuario(Integer id) {
 
         Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        a.setMascotas(List.of());
+
         usuarioRepository.delete(a);
 
         return ResponseEntity.ok("Se ha eliminado el usuario correctamente");
