@@ -62,7 +62,7 @@ public class PropiedadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Propiedad> actualizar(@PathVariable Integer id, @RequestBody Propiedad propiedad) {
+    public ResponseEntity<Propiedad> actualizar(@PathVariable Integer id, @RequestBody PropiedadDTO propiedad) {
         return ResponseEntity.ok(propiedadService.actualizar(id, propiedad));
     }
 

@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PropiedadDTO {
-    private Integer id;
 
     @NotNull(message = "La capacidad es obligatoria")
     @Min(value = 1, message = "La capacidad mínima es 1")
@@ -33,12 +32,10 @@ public class PropiedadDTO {
     @Size(max = 100, message = "El nombre debe tener máximo 100 caracteres")
     private String nombre;
 
-    @NotNull(message = "El precio por noche es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor que 0")
     private BigDecimal precioPorNoche;
 
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Integer usuarioId;
+    //@NotNull(message = "El ID del usuario es obligatorio")
+    //private Integer usuarioId;
 
     private List<Integer> serviciosIds;
 }

@@ -60,7 +60,7 @@ public class PropiedadService {
     }
 
     //Peticion realizada cuando se logea
-    public Propiedad actualizar(Integer id, Propiedad propiedadActualizada) {
+    public Propiedad actualizar(Integer id, PropiedadDTO propiedadActualizada) {
         Propiedad propiedad = obtenerPorId(id);
         propiedad.setNombre(propiedadActualizada.getNombre());
         propiedad.setDescripcion(propiedadActualizada.getDescripcion());
