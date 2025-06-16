@@ -93,15 +93,15 @@ public class MascotaService {
     }
 
     //Peticion realizada una vez logeado
-    public MascotaDTO update(MascotaDTO dto) {
+    public MascotaDTO update(MascotaDTO dto, int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
             throw new RuntimeException("El usuario no existe");    
         }
         Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
 
-        Mascota mascota = mascotaRepository.findById(dto.getId())
-                .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + dto.getId() + " no existe."));
+        Mascota mascota = mascotaRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + id + " no existe."));
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
@@ -116,7 +116,7 @@ public class MascotaService {
         // }
 
         // Validar unicidad del nombre por cliente, ignorando la mascota actual
-        if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), u.getId(), dto.getId())) {
+        if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), u.getId(), id)) {
             throw new IllegalArgumentException("Ya existe otra mascota con ese nombre para este cliente.");
         }
 
@@ -156,7 +156,6 @@ public class MascotaService {
 	//Convertir la entidad Mascota en un objeto MascotaDTO
 	private MascotaDTO toDTO(Mascota mascota) {
         return MascotaDTO.builder()
-                .id(mascota.getId())
                 .nombre(mascota.getNombre())
                 .descripcion(mascota.getDescripcion())
                 .edad(mascota.getEdad())

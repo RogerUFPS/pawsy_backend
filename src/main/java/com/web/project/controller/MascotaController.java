@@ -42,8 +42,8 @@ public class MascotaController {
 	// Actualizar una mascota existente
 	@PreAuthorize("hasRole('CLIENTE')")
 	@PutMapping("/{id}")
-	public ResponseEntity<MascotaDTO> actualizarMascota(@RequestBody MascotaDTO dto) {
-		MascotaDTO mascotaActualizada = mascotaService.update(dto);
+	public ResponseEntity<MascotaDTO> actualizarMascota(@RequestBody MascotaDTO dto, @PathVariable int id) {
+		MascotaDTO mascotaActualizada = mascotaService.update(dto, id);
 		// Map<String, Object> response = new HashMap<>();
 		// response.put("mensaje", "Mascota actualizada correctamente.");
 		// response.put("datos", mascotaActualizada);

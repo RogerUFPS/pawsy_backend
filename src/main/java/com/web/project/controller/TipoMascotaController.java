@@ -31,8 +31,8 @@ public class TipoMascotaController {
 
     // Crear nuevo tipo
     @PostMapping
-    public ResponseEntity<TipoMascota> crear(@RequestBody TipoMascota tipoMascota) {
-        TipoMascota creado = tipoMascotaService.guardar(tipoMascota);
+    public ResponseEntity<TipoMascota> crear(@RequestBody String nombre) {
+        TipoMascota creado = tipoMascotaService.guardar(nombre);
         return ResponseEntity.ok(creado);
     }
 

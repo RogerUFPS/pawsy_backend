@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MascotaDTO {
-    private Integer id;
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 50, message = "El nombre no debe superar los 50 caracteres")
