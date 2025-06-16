@@ -67,8 +67,8 @@ public class AuthService {
             Usuario ex = usuarioRepo.findByEmail(request.getEmail()).get();
             if(!ex.isVerificado()) {
                 if(ex.getExpiracion().isBefore(LocalDateTime.now())) {
-                    usuarioRepo.delete(ex);
-                    throw new RuntimeException("Se ha eliminado el usuario por pasarse el tiempo del token, registrese nuevamente");
+                    reenviarToken(request.getEmail());
+                    throw new RuntimeException("Se ha reenviado el token, ya que el anterior se ha expirado, verifique antes de iniciar sesion");
                 } else throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
                 
             } else {
