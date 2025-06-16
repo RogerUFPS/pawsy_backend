@@ -23,13 +23,16 @@ public class TipoMascotaService {
                 .orElseThrow(() -> new NoSuchElementException("TipoMascota no encontrado con ID: " + id));
     }
 
-    public TipoMascota guardar(TipoMascota tipoMascota) {
-        return tipoMascotaRepository.save(tipoMascota);
+    public TipoMascota guardar(String nombre) {
+
+        TipoMascota t = new TipoMascota();
+        t.setNombre(nombre);
+        return tipoMascotaRepository.save(t);
     }
 
-    public TipoMascota actualizar(Integer id, TipoMascota tipoMascota) {
+    public TipoMascota actualizar(Integer id, String nombre) {
         TipoMascota existente = obtenerPorId(id);
-        existente.setNombre(tipoMascota.getNombre());
+        existente.setNombre(nombre);
         return tipoMascotaRepository.save(existente);
     }
 

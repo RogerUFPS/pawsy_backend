@@ -27,10 +27,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers("/**").permitAll()
-                        .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        // .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
+                        // .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
