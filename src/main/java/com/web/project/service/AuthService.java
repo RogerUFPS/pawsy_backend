@@ -48,11 +48,9 @@ public class AuthService {
     public AuthResponse login(AuthRequest request) {
 
         Usuario usuario = usuarioRepo.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Usuario no existente"));
-
         if(!usuario.isVerificado()) {
             throw new IllegalStateException("Debes verificar tu correo antes de iniciar sesion");
         }
-
         try {
             authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -65,19 +63,14 @@ public class AuthService {
     }
 
     public ResponseEntity<?> register(RegisterRequest request) {
-
         if (usuarioRepo.findByEmail(request.getEmail()).isPresent()) {
-
             Usuario ex = usuarioRepo.findByEmail(request.getEmail()).get();
-
             if(!ex.isVerificado()) {
-
                 if(ex.getExpiracion().isBefore(LocalDateTime.now())) {
                     usuarioRepo.delete(ex);
                     throw new RuntimeException("Se ha eliminado el usuario por pasarse el tiempo del token, registrese nuevamente");
-                } else {
-                    throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
-                }
+                } else throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
+                
             } else {
                 throw new RuntimeException("El usuario ya existe, se eliminó para que pueda registrarse nuevamente.");
             }

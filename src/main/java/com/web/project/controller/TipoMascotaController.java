@@ -1,5 +1,6 @@
 package com.web.project.controller;
 
+import com.web.project.dto.TipoMascotaReq;
 import com.web.project.entity.TipoMascota;
 import com.web.project.service.TipoMascotaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,15 @@ public class TipoMascotaController {
 
     // Crear nuevo tipo
     @PostMapping
-    public ResponseEntity<TipoMascota> crear(@RequestBody String nombre) {
-        TipoMascota creado = tipoMascotaService.guardar(nombre);
+    public ResponseEntity<TipoMascota> crear(@RequestBody TipoMascotaReq n) {
+        TipoMascota creado = tipoMascotaService.guardar(n);
         return ResponseEntity.ok(creado);
     }
 
     // Actualizar
     @PutMapping("/{id}")
-    public ResponseEntity<TipoMascota> actualizar(@PathVariable Integer id, @RequestBody String nombre) {
-        TipoMascota actualizado = tipoMascotaService.actualizar(id, nombre);
+    public ResponseEntity<TipoMascota> actualizar(@PathVariable Integer id, @RequestBody TipoMascotaReq n) {
+        TipoMascota actualizado = tipoMascotaService.actualizar(id, n);
         return ResponseEntity.ok(actualizado);
     }
 
