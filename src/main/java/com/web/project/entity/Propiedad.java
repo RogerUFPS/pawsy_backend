@@ -47,7 +47,7 @@ public class Propiedad implements Serializable {
 	@JoinColumn(name="cuidador_id", nullable=false)
 	private Usuario usuario;
 
-	@OneToMany(mappedBy="propiedad")
+	@OneToMany(mappedBy="propiedad", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Reserva> reservas;
 

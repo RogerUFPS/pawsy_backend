@@ -47,4 +47,25 @@ public class CloudinaryService {
     }
 
 
+    public String extraerPublicId(String nuevaUrl) {
+        try {
+            String[] partes = nuevaUrl.split("/upload/");
+            if (partes.length < 2) return null;
+
+            String rutaRelativa = partes[1];
+            if (rutaRelativa.startsWith("v")) {
+                rutaRelativa = rutaRelativa.substring(rutaRelativa.indexOf("/") + 1);
+            }
+
+            int punto = rutaRelativa.lastIndexOf(".");
+            if (punto != -1) {
+                rutaRelativa = rutaRelativa.substring(0, punto);
+            }
+
+            return rutaRelativa;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

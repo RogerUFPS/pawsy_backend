@@ -10,11 +10,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.CuidadorDTO;
+import com.web.project.dto.UsuarioProfile;
+import com.web.project.entity.Mascota;
+import com.web.project.entity.Propiedad;
 import com.web.project.entity.Usuario;
 import com.web.project.repository.MascotaRepository;
+import com.web.project.repository.PropiedadRepository;
 import com.web.project.repository.UsuarioRepository;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 
 @Service
 public class UsuarioService {
@@ -24,18 +27,32 @@ public class UsuarioService {
 
     @Autowired
     private MascotaRepository mascotaRepository;
+    @Autowired
+    private PropiedadRepository propiedadRepository;
 
-    public ResponseEntity<Usuario> getPerfil() {
+    public ResponseEntity<UsuarioProfile> getPerfil() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        return ResponseEntity.ok(usuarioRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("El usuario no existe")));
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
+        UsuarioProfile n = new UsuarioProfile();
+        n.setEmail(a.getEmail());
+        n.setNombre(a.getNombre());
+        n.setTelefono(a.getTelefono()); 
+        return ResponseEntity.ok(n);
     }
 
     public ResponseEntity<List<Usuario>> getCuidadores() {
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Usuario> ne = usuarioRepository.findByTipoUsuario("CUIDADOR");
         return ResponseEntity.ok(ne);
-    }   
+    }
+
+    public ResponseEntity<?> updateNombre(String nombre) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
+        a.setNombre(nombre);
+        usuarioRepository.save(a);
+        return ResponseEntity.ok("Se actualizo correctamente");
+    }
 
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
@@ -90,7 +107,6 @@ public class UsuarioService {
     public ResponseEntity<?> eliminarUsuario(Integer id) {
 
         Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
-        a.setMascotas(List.of());
 
         usuarioRepository.delete(a);
 

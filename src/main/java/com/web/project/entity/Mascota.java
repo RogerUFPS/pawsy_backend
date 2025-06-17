@@ -49,7 +49,7 @@ public class Mascota implements Serializable {
 
 	//bi-directional many-to-one association to Reserva
 	@JsonIgnore
-	@OneToMany(mappedBy="mascota")
+	@OneToMany(mappedBy="mascota", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Reserva> reservas;
 
 }

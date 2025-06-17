@@ -21,12 +21,12 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
 
-        Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
+        String role = userDetails.getAuthorities().stream().findFirst().map(Object::toString).orElse("CLIENTE");
 
+        //Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
         return Jwts.builder()
-                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
-                .claim("rol", userDetails.getAuthorities())
+                .claim("rol", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)

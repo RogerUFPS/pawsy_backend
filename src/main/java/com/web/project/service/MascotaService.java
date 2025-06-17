@@ -1,6 +1,6 @@
 package com.web.project.service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,10 +31,11 @@ public class MascotaService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private TipoMascotaRepository tipoMascotaRepository;
+
     @Autowired
     private CloudinaryService cloudinaryService;
-
-    public List<MascotaDTO> listAll(){
+	
+	public List<MascotaDTO> listAll(){
 		return mascotaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
@@ -63,31 +64,21 @@ public class MascotaService {
     //Peticion realizada una vez logeado
     public MascotaDTO create(MascotaDTO dto, MultipartFile foto) {
         String urlImagen = cloudinaryService.subirImagen(foto).toString();
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
-            throw new RuntimeException("El usuario no existe");    
-        }
-        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+        Usuario u = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
         }
 
-        TipoMascota tipo;
-        if (dto.getTipoId() != null) {
-            tipo = tipoMascotaRepository.findById(dto.getTipoId())
-                    .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
-        }else {
-            throw new IllegalArgumentException("El campo tipo de mascota es obligatorio.");
-        }
-
         if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
-            throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
+            throw new IllegalArgumentException("La edad de la mascota es obligatoria y válida.");
         }
 
-        // if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
-        //     throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
-        // }
+        TipoMascota tipo = tipoMascotaRepository.findById(dto.getTipoId())
+                .orElseThrow(() -> new NoSuchElementException("Tipo de mascota no existe"));
 
         Mascota mascota = new Mascota();
         mascota.setNombre(dto.getNombre());
@@ -96,7 +87,6 @@ public class MascotaService {
         mascota.setUsuario(u);
         mascota.setTipoMascota(tipo);
 
-        // Crear foto y asociarla
         Map<String, String> uploadResult = cloudinaryService.subirImagen(foto);
 
         FotosMascota fotoMascota = new FotosMascota();
@@ -105,35 +95,32 @@ public class MascotaService {
         fotoMascota.setMascota(mascota);
 
 
-        mascota.setFotosMascotas(Collections.singletonList(fotoMascota));
-
         return toDTO(mascotaRepository.save(mascota));
     }
 
+
     //Peticion realizada una vez logeado
-    public MascotaDTO update(MascotaDTO dto, int id) {
+    public MascotaDTO update(MascotaDTO dto, int id, MultipartFile nuevaFoto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
-            throw new RuntimeException("El usuario no existe");    
-        }
-        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+        Usuario u = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
         Mascota mascota = mascotaRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("La mascota con ID " + id + " no existe."));
+
+        // Validación de propiedad del recurso
+        if (!mascota.getUsuario().getId().equals(u.getId())) {
+            throw new RuntimeException("Esta mascota no pertenece al usuario autenticado.");
+        }
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
         }
 
-        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
-            throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
+        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50) {
+            throw new IllegalArgumentException("La edad de la mascota es obligatoria y debe estar entre 0 y 50.");
         }
 
-        // if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
-        //     throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
-        // }
-
-        // Validar unicidad del nombre por cliente, ignorando la mascota actual
         if (mascotaRepository.existsByNombreAndUsuario_IdAndIdNot(dto.getNombre(), u.getId(), id)) {
             throw new IllegalArgumentException("Ya existe otra mascota con ese nombre para este cliente.");
         }
@@ -146,17 +133,37 @@ public class MascotaService {
 
         mascota.setNombre(dto.getNombre().trim());
         mascota.setEdad(dto.getEdad());
-        mascota.setDescripcion(dto.getDescripcion().trim());
+        mascota.setDescripcion(dto.getDescripcion() != null ? dto.getDescripcion().trim() : null);
+
+        // 🔁 Actualizar la imagen si se envía una nueva
+        if (nuevaFoto != null && !nuevaFoto.isEmpty()) {
+            // Eliminar la anterior de Cloudinary (si existe)
+            if (mascota.getFotosMascotas() != null && !mascota.getFotosMascotas().isEmpty()) {
+                for (FotosMascota foto : mascota.getFotosMascotas()) {
+                    cloudinaryService.eliminarImagen(foto.getPublicId());
+                }
+                mascota.getFotosMascotas().clear(); // Limpiar lista
+            }
+
+            // Subir nueva foto
+            String nuevaUrl = cloudinaryService.subirImagen(nuevaFoto).toString();
+            FotosMascota fotoMascota = new FotosMascota();
+            fotoMascota.setUrl(nuevaUrl);
+            fotoMascota.setPublicId(cloudinaryService.extraerPublicId(nuevaUrl));
+            fotoMascota.setMascota(mascota);
+
+            mascota.getFotosMascotas().add(fotoMascota);
+        }
 
         return toDTO(mascotaRepository.save(mascota));
     }
 
+
     //Peticion realizada una vez logeado
     public ResponseEntity<?> delete(Integer id) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario u = usuarioRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
+                .orElseThrow(() -> new RuntimeException("El usuario con email " + authentication.getName() + " no existe"));
 
         Mascota mascota = mascotaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mascota no existe"));
@@ -165,10 +172,11 @@ public class MascotaService {
             throw new RuntimeException("Esta mascota no existe para este usuario");
         }
 
-        //Eliminar la imagen en Cloudinary si existe
-        if (mascota.getFotosMascotas() != null && !mascota.getFotosMascotas().isEmpty()) {
-            FotosMascota foto = mascota.getFotosMascotas().get(0); // solo una foto
-            cloudinaryService.eliminarImagen(foto.getPublicId());
+        // Borrar imágenes de Cloudinary
+        if (mascota.getFotosMascotas() != null) {
+            for (FotosMascota foto : mascota.getFotosMascotas()) {
+                cloudinaryService.eliminarImagen(foto.getPublicId());
+            }
         }
 
         mascotaRepository.delete(mascota);
@@ -180,19 +188,20 @@ public class MascotaService {
 
     //Convertir la entidad Mascota en un objeto MascotaDTO
     public MascotaDTO toDTO(Mascota mascota) {
-        MascotaDTO dto = new MascotaDTO();
-        dto.setNombre(mascota.getNombre());
-        dto.setEdad(mascota.getEdad());
-        dto.setDescripcion(mascota.getDescripcion());
-        dto.setClienteId(mascota.getUsuario().getId());
-        dto.setTipoId(mascota.getTipoMascota().getId());
-
+        String urlFoto = null;
         if (mascota.getFotosMascotas() != null && !mascota.getFotosMascotas().isEmpty()) {
-            dto.setUrlFoto(mascota.getFotosMascotas().get(0).getUrl());
+            urlFoto = mascota.getFotosMascotas().get(0).getUrl();
         }
 
-        return dto;
+        return MascotaDTO.builder()
+                .nombre(mascota.getNombre())
+                .descripcion(mascota.getDescripcion())
+                .edad(mascota.getEdad())
+                .tipoId(mascota.getTipoMascota().getId())
+                .urlFoto(urlFoto)
+                .build();
     }
+
 
 
 

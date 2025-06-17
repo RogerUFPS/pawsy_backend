@@ -60,11 +60,11 @@ public class Usuario implements UserDetails {
 	private String tipoUsuario;
 
 	@JsonIgnore
-	@OneToMany(mappedBy="usuario")
+	@OneToMany(mappedBy="usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Mascota> mascotas;
 
 	@JsonIgnore
-	@OneToMany(mappedBy="usuario")
+	@OneToMany(mappedBy="usuario", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Propiedad> propiedades;
 
     @Column(name = "token_verificacion", length = 100)

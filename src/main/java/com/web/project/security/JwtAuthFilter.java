@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,9 +13,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.web.project.service.JwtService;
-
 import java.io.IOException;
+import com.web.project.service.JwtService;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isPublicRoute(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/");
+        return path.startsWith("/auth") || path.startsWith("/docs") || path.startsWith("/v3");
     }
 
     @Override
@@ -58,10 +58,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+                System.out.println("Autenticación establecida: " + authToken.getName());
+
             }
         }
         filterChain.doFilter(request, response);

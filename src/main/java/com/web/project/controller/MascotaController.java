@@ -12,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/mascota")
@@ -23,10 +26,16 @@ public class MascotaController {
 	// Obtener mascotas por usuario
 	//@PreAuthorize("hasRole('CLIENTE')")
 	@GetMapping("/usuario/{clienteId}")
-	public ResponseEntity<?> obtenerPorUsuario() {
+	public ResponseEntity<?> obtenerPorUsuario(@PathVariable Integer id) {
         List<MascotaDTO> mascotas = mascotaService.listarPorCliente();
         return ResponseEntity.ok(mascotas);
 	}
+
+	@GetMapping("/lista-mascotas")
+	public ResponseEntity<List<MascotaDTO>> listaMascotasCliente() {
+		return ResponseEntity.ok(mascotaService.listarPorCliente());
+	}
+	
 
 	// Crear una nueva mascota
 	//@PreAuthorize("hasRole('CLIENTE')")
@@ -56,14 +65,16 @@ public class MascotaController {
 
 	// Actualizar una mascota existente
 	//@PreAuthorize("hasRole('CLIENTE')")
-	@PutMapping("/{id}")
-	public ResponseEntity<MascotaDTO> actualizarMascota(@RequestBody MascotaDTO dto, @PathVariable int id) {
-		MascotaDTO mascotaActualizada = mascotaService.update(dto, id);
-		// Map<String, Object> response = new HashMap<>();
-		// response.put("mensaje", "Mascota actualizada correctamente.");
-		// response.put("datos", mascotaActualizada);
-		return ResponseEntity.ok(mascotaActualizada);
+	@PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<MascotaDTO> actualizarMascota(
+			@PathVariable int id,
+			@RequestPart("mascota") MascotaDTO dto,
+			@RequestPart(value = "foto", required = false) MultipartFile nuevaFoto
+	) {
+		MascotaDTO actualizada = mascotaService.update(dto, id, nuevaFoto);
+		return ResponseEntity.ok(actualizada);
 	}
+
 
 	// Eliminar una mascota
 	//@PreAuthorize("hasRole('CLIENTE')")
