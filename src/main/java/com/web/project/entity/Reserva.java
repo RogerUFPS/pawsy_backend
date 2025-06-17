@@ -32,19 +32,15 @@ public class Reserva implements Serializable {
 	@Column(name="fecha_inicio", nullable=false)
 	private Instant fechaInicio;
 
-	//bi-directional many-to-one association to Mascota
 	@ManyToOne
 	@JoinColumn(name="mascota_id", nullable=false)
 	private Mascota mascota;
 
-	//bi-directional many-to-one association to Propiedade
 	@ManyToOne
 	@JoinColumn(name="propiedad_id", nullable=false)
 	private Propiedad propiedad;
 
-	//bi-directional many-to-many association to Servicio
 	@ManyToMany(mappedBy="reservas")
 	private List<Servicio> servicios;
-
 
 }

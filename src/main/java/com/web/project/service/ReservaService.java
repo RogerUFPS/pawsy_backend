@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.ReservaReq;
+import com.web.project.dto.ReservaRes;
 import com.web.project.entity.Mascota;
 import com.web.project.entity.Propiedad;
 import com.web.project.entity.Reserva;
@@ -50,7 +51,7 @@ public class ReservaService {
         Reserva r = new Reserva();
         p.setCapacidad(p.getCapacidad()-1);
         propiedadRepository.save(p);
-        r.setEstado("Activa");
+        r.setEstado("Reservada");
         r.setFechaInicio(resq.getFechaInicio());
         r.setFechaFin(resq.getFechaFin());
         r.setMascota(m);
@@ -59,5 +60,15 @@ public class ReservaService {
         reservaRepository.save(r);
     }
 
+    public void listarReservasPropiedad(int propiedadid) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()->new RuntimeException("El usuario no existe"));
+    }
+
+    public List<ReservaRes> reservasActivas() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()->new RuntimeException("El usuario no existe"));
+        return null;
+    }
 
 }

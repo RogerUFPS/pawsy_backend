@@ -32,6 +32,11 @@ public class PropiedadController {
         return ResponseEntity.ok(propiedadService.listarTodas());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PropiedadRes> propiedadPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(propiedadService.obtenerPropiedadPorId(id));
+    }
+
     @PreAuthorize("hasRole('CUIDADOR')")
     @GetMapping("/lista-propiedades")
     public ResponseEntity<List<PropiedadRes>> listaPropiedadesPropias() {
