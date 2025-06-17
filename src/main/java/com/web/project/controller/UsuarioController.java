@@ -11,12 +11,19 @@ import com.web.project.dto.CuidadorDTO;
 import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
 
+
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @GetMapping("/api/usuario/perfil")
+    public ResponseEntity<Usuario> getMethodName() {
+        return usuarioService.getPerfil();
+    }
+    
 
     //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping

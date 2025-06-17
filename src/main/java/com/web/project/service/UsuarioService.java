@@ -23,6 +23,12 @@ public class UsuarioService {
     @Autowired
     private MascotaRepository mascotaRepository;
 
+    public ResponseEntity<Usuario> getPerfil() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return ResponseEntity.ok(usuarioRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("El usuario no existe")));
+    }
+
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
