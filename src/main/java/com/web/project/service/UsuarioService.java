@@ -33,7 +33,7 @@ public class UsuarioService {
 
     public ResponseEntity<UsuarioProfile> getPerfil() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario no existe"));
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
         UsuarioProfile n = new UsuarioProfile();
         n.setEmail(a.getEmail());
         n.setNombre(a.getNombre());
