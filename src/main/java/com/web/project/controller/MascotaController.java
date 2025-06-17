@@ -4,9 +4,10 @@ import com.web.project.dto.MascotaDTO;
 import com.web.project.service.MascotaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +30,23 @@ public class MascotaController {
 
 	// Crear una nueva mascota
 	//@PreAuthorize("hasRole('CLIENTE')")
-	@PostMapping
-	public ResponseEntity<MascotaDTO> crearMascota(@RequestBody MascotaDTO dto) {
-		return ResponseEntity.ok(mascotaService.create(dto));
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<MascotaDTO> crearMascota(@RequestParam String nombre,
+												   @RequestParam(required = false) String descripcion,
+												   @RequestParam Integer edad,
+												   @RequestParam Integer clienteId,
+												   @RequestParam Integer tipoId,
+												   @RequestParam MultipartFile foto) {
+		MascotaDTO dto = MascotaDTO.builder()
+				.nombre(nombre)
+				.descripcion(descripcion)
+				.edad(edad)
+				.clienteId(clienteId)
+				.tipoId(tipoId)
+				.build();
+
+		MascotaDTO mascota = mascotaService.create(dto, foto);
+		return ResponseEntity.ok(mascota);
 		// Map<String, Object> response = new HashMap<>();
 		// response.put("mensaje", "Mascota creada exitosamente.");
 		// response.put("datos", nuevaMascota);

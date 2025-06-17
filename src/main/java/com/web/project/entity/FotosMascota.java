@@ -29,6 +29,8 @@ public class FotosMascota implements Serializable {
 	@Column(nullable=false, length=300)
 	private String url;
 
+	private String publicId;
+
 	//bi-directional many-to-one association to Mascota
 	@ManyToOne
 	@JoinColumn(name="mascota_id", nullable=false)

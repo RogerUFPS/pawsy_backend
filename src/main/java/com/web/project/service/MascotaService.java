@@ -1,9 +1,12 @@
 package com.web.project.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import com.web.project.entity.FotosMascota;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,7 @@ import com.web.project.dto.MascotaDTO;
 import com.web.project.repository.MascotaRepository;
 import com.web.project.repository.TipoMascotaRepository;
 import com.web.project.repository.UsuarioRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MascotaService {
@@ -27,8 +31,10 @@ public class MascotaService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private TipoMascotaRepository tipoMascotaRepository;
-	
-	public List<MascotaDTO> listAll(){
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
+    public List<MascotaDTO> listAll(){
 		return mascotaRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
@@ -55,7 +61,8 @@ public class MascotaService {
     }
 
     //Peticion realizada una vez logeado
-    public MascotaDTO create(MascotaDTO dto) {
+    public MascotaDTO create(MascotaDTO dto, MultipartFile foto) {
+        String urlImagen = cloudinaryService.subirImagen(foto).toString();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
             throw new RuntimeException("El usuario no existe");    
@@ -88,6 +95,17 @@ public class MascotaService {
         mascota.setDescripcion(dto.getDescripcion());
         mascota.setUsuario(u);
         mascota.setTipoMascota(tipo);
+
+        // Crear foto y asociarla
+        Map<String, String> uploadResult = cloudinaryService.subirImagen(foto);
+
+        FotosMascota fotoMascota = new FotosMascota();
+        fotoMascota.setUrl(uploadResult.get("url"));
+        fotoMascota.setPublicId(uploadResult.get("public_id"));
+        fotoMascota.setMascota(mascota);
+
+
+        mascota.setFotosMascotas(Collections.singletonList(fotoMascota));
 
         return toDTO(mascotaRepository.save(mascota));
     }
@@ -137,31 +155,45 @@ public class MascotaService {
     public ResponseEntity<?> delete(Integer id) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
-            throw new RuntimeException("El usuario no existe");    
-        }
-        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
-        
-        if(!mascotaRepository.findById(id).isPresent()) throw new RuntimeException("Mascota no existe");
+        Usuario u = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
-        if(!u.getMascotas().contains(mascotaRepository.findById(id).get())) throw new RuntimeException("Esta mascota no existe para este usuario");
-        
-        Mascota m = mascotaRepository.findById(id).get();
-        mascotaRepository.delete(m);
+        Mascota mascota = mascotaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mascota no existe"));
+
+        if (!u.getMascotas().contains(mascota)) {
+            throw new RuntimeException("Esta mascota no existe para este usuario");
+        }
+
+        //Eliminar la imagen en Cloudinary si existe
+        if (mascota.getFotosMascotas() != null && !mascota.getFotosMascotas().isEmpty()) {
+            FotosMascota foto = mascota.getFotosMascotas().get(0); // solo una foto
+            cloudinaryService.eliminarImagen(foto.getPublicId());
+        }
+
+        mascotaRepository.delete(mascota);
 
         return ResponseEntity.ok("La mascota se ha eliminado correctamente");
     }
-	
-	
-	//Convertir la entidad Mascota en un objeto MascotaDTO
-	private MascotaDTO toDTO(Mascota mascota) {
-        return MascotaDTO.builder()
-                .nombre(mascota.getNombre())
-                .descripcion(mascota.getDescripcion())
-                .edad(mascota.getEdad())
-                .tipoId(mascota.getTipoMascota() != null ? mascota.getTipoMascota().getId() : null)
-                .build();
+
+
+
+    //Convertir la entidad Mascota en un objeto MascotaDTO
+    public MascotaDTO toDTO(Mascota mascota) {
+        MascotaDTO dto = new MascotaDTO();
+        dto.setNombre(mascota.getNombre());
+        dto.setEdad(mascota.getEdad());
+        dto.setDescripcion(mascota.getDescripcion());
+        dto.setClienteId(mascota.getUsuario().getId());
+        dto.setTipoId(mascota.getTipoMascota().getId());
+
+        if (mascota.getFotosMascotas() != null && !mascota.getFotosMascotas().isEmpty()) {
+            dto.setUrlFoto(mascota.getFotosMascotas().get(0).getUrl());
+        }
+
+        return dto;
     }
+
 
 
     public MascotaDTO findById(Integer id) {
