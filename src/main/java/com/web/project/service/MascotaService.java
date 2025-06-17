@@ -57,9 +57,7 @@ public class MascotaService {
     //Peticion realizada una vez logeado
     public MascotaDTO create(MascotaDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Usuario u = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("El usuario no existe"));
-        if (authentication == null || authentication.getName() == null) throw new RuntimeException("No se encontró usuario autenticado.");
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
         
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
@@ -80,7 +78,7 @@ public class MascotaService {
         mascota.setNombre(dto.getNombre());
         mascota.setEdad(dto.getEdad());
         mascota.setDescripcion(dto.getDescripcion());
-        mascota.setUsuario(u);
+        mascota.setUsuario(a);
         mascota.setTipoMascota(tipo);
 
         return toDTO(mascotaRepository.save(mascota));

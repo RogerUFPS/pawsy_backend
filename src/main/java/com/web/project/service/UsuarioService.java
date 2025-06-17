@@ -18,7 +18,6 @@ import com.web.project.repository.MascotaRepository;
 import com.web.project.repository.PropiedadRepository;
 import com.web.project.repository.UsuarioRepository;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 
 @Service
 public class UsuarioService {
