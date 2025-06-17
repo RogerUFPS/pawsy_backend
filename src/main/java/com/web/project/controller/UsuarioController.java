@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.web.project.dto.CuidadorDTO;
+import com.web.project.dto.UsuarioProfile;
 import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("/perfil")
-    public ResponseEntity<Usuario> getPerfil() {
+    public ResponseEntity<UsuarioProfile> getPerfil() {
         return usuarioService.getPerfil();
     }
     

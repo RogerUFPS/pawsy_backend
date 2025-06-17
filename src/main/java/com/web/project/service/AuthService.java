@@ -10,6 +10,7 @@ import com.web.project.repository.UsuarioRepository;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +48,8 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-
         Usuario usuario = usuarioRepo.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Usuario no existente"));
-        if(!usuario.isVerificado()) {
-            throw new IllegalStateException("Debes verificar tu correo antes de iniciar sesion");
-        }
+        if(!usuario.isVerificado()) throw new IllegalStateException("Debes verificar tu correo antes de iniciar sesion");
         try {
             authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -64,8 +62,10 @@ public class AuthService {
     }
 
     public ResponseEntity<?> register(RegisterRequest request) {
-        if (usuarioRepo.findByEmail(request.getEmail()).isPresent()) {
-            Usuario ex = usuarioRepo.findByEmail(request.getEmail()).get();
+
+        Optional<Usuario> opt = usuarioRepo.findByEmail(request.getEmail());
+        if (opt.isPresent()) {
+            Usuario ex = opt.get();
             if(!ex.isVerificado()) {
                 if(ex.getExpiracion().isBefore(OffsetDateTime.now(ZoneOffset.of("-05:00")))) {
                     reenviarToken(request.getEmail());

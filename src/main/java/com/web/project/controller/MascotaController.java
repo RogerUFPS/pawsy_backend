@@ -25,7 +25,7 @@ public class MascotaController {
 	// Obtener mascotas por usuario
 	//@PreAuthorize("hasRole('CLIENTE')")
 	@GetMapping("/usuario/{clienteId}")
-	public ResponseEntity<?> obtenerPorUsuario() {
+	public ResponseEntity<?> obtenerPorUsuario(@PathVariable Integer id) {
         List<MascotaDTO> mascotas = mascotaService.listarPorCliente();
         return ResponseEntity.ok(mascotas);
 	}
