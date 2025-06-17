@@ -1,6 +1,7 @@
 package com.web.project.entity;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class Usuario implements UserDetails {
     private String token;
 
     @Column(name = "token_expiracion")
-    private LocalDateTime expiracion;
+    private OffsetDateTime expiracion;
 
     @Column(nullable = false)
     private boolean verificado = false;

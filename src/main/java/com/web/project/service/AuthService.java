@@ -8,7 +8,8 @@ import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
-
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +49,9 @@ public class AuthService {
     public AuthResponse login(AuthRequest request) {
 
         Usuario usuario = usuarioRepo.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Usuario no existente"));
-
         if(!usuario.isVerificado()) {
             throw new IllegalStateException("Debes verificar tu correo antes de iniciar sesion");
         }
-
         try {
             authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -65,19 +64,14 @@ public class AuthService {
     }
 
     public ResponseEntity<?> register(RegisterRequest request) {
-
         if (usuarioRepo.findByEmail(request.getEmail()).isPresent()) {
-
             Usuario ex = usuarioRepo.findByEmail(request.getEmail()).get();
-
             if(!ex.isVerificado()) {
-
-                if(ex.getExpiracion().isBefore(LocalDateTime.now())) {
-                    usuarioRepo.delete(ex);
-                    throw new RuntimeException("Se ha eliminado el usuario por pasarse el tiempo del token, registrese nuevamente");
-                } else {
-                    throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
-                }
+                if(ex.getExpiracion().isBefore(OffsetDateTime.now(ZoneOffset.of("-05:00")))) {
+                    reenviarToken(request.getEmail());
+                    throw new RuntimeException("Se ha reenviado el token, ya que el anterior se ha expirado, verifique antes de iniciar sesion");
+                } else throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
+                
             } else {
                 throw new RuntimeException("El usuario ya existe, se eliminó para que pueda registrarse nuevamente.");
             }
@@ -92,7 +86,7 @@ public class AuthService {
 
         String uuid = UUID.randomUUID().toString();
         nuevoUsuario.setToken(uuid);
-        nuevoUsuario.setExpiracion(LocalDateTime.now().plusMinutes(5));
+        nuevoUsuario.setExpiracion(OffsetDateTime.now(ZoneOffset.of("-05:00")).plusMinutes(5) );
 
         em.enviarEmailVerificacion(nuevoUsuario.getEmail(), nuevoUsuario.getToken());
 
@@ -104,18 +98,14 @@ public class AuthService {
     public void verificarEmail(String UUID, String email) {
         if(!usuarioRepo.findByEmail(email).isPresent()) {
             throw new RuntimeException("El usuario no existe");    
-        } 
+        }
         Usuario s = usuarioRepo.findByEmail(email).get();
-
-        if(s.getExpiracion().isBefore(LocalDateTime.now() ) ) {
-            usuarioRepo.delete(s);
+        if(s.getExpiracion().isBefore(OffsetDateTime.now(ZoneOffset.of("-05:00"))) ) {
             throw new RuntimeException("El tiempo de expiracion del token ya pasó!"); 
         }
-
         if(!s.getToken().equals(UUID)) {
             throw new RuntimeException("El token es invalido");
         }
-
         s.setVerificado(true);
         usuarioRepo.save(s);
     }
@@ -171,7 +161,7 @@ public class AuthService {
         }
 
         usuario.setToken(UUID.randomUUID().toString());
-        usuario.setExpiracion(LocalDateTime.now().plusMinutes(5));
+        usuario.setExpiracion(OffsetDateTime.now(ZoneOffset.of("-05:00")));
         usuarioRepo.save(usuario);
         em.enviarEmailVerificacion(email, usuario.getToken());
 

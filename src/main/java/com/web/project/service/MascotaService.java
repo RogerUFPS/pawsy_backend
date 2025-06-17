@@ -159,7 +159,6 @@ public class MascotaService {
                 .nombre(mascota.getNombre())
                 .descripcion(mascota.getDescripcion())
                 .edad(mascota.getEdad())
-                .clienteId(mascota.getUsuario().getId())
                 .tipoId(mascota.getTipoMascota() != null ? mascota.getTipoMascota().getId() : null)
                 .build();
     }

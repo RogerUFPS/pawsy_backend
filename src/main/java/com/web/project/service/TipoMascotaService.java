@@ -1,5 +1,6 @@
 package com.web.project.service;
 
+import com.web.project.dto.TipoMascotaReq;
 import com.web.project.entity.TipoMascota;
 import com.web.project.repository.TipoMascotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,15 @@ public class TipoMascotaService {
                 .orElseThrow(() -> new NoSuchElementException("TipoMascota no encontrado con ID: " + id));
     }
 
-    public TipoMascota guardar(String nombre) {
-
-        TipoMascota t = new TipoMascota();
-        t.setNombre(nombre);
-        return tipoMascotaRepository.save(t);
+    public TipoMascota guardar(TipoMascotaReq t) {
+        TipoMascota f = new TipoMascota();
+        f.setNombre(t.getNombre());
+        return tipoMascotaRepository.save(f);
     }
 
-    public TipoMascota actualizar(Integer id, String nombre) {
+    public TipoMascota actualizar(Integer id, TipoMascotaReq n) {
         TipoMascota existente = obtenerPorId(id);
-        existente.setNombre(nombre);
+        existente.setNombre(n.getNombre());
         return tipoMascotaRepository.save(existente);
     }
 

@@ -20,7 +20,7 @@ public class MascotaController {
 	private MascotaService mascotaService;
 
 	// Obtener mascotas por usuario
-	@PreAuthorize("hasRole('CLIENTE')")
+	//@PreAuthorize("hasRole('CLIENTE')")
 	@GetMapping("/usuario/{clienteId}")
 	public ResponseEntity<?> obtenerPorUsuario() {
         List<MascotaDTO> mascotas = mascotaService.listarPorCliente();
@@ -28,7 +28,7 @@ public class MascotaController {
 	}
 
 	// Crear una nueva mascota
-	@PreAuthorize("hasRole('CLIENTE')")
+	//@PreAuthorize("hasRole('CLIENTE')")
 	@PostMapping
 	public ResponseEntity<MascotaDTO> crearMascota(@RequestBody MascotaDTO dto) {
 		return ResponseEntity.ok(mascotaService.create(dto));
@@ -40,7 +40,7 @@ public class MascotaController {
 	}
 
 	// Actualizar una mascota existente
-	@PreAuthorize("hasRole('CLIENTE')")
+	//@PreAuthorize("hasRole('CLIENTE')")
 	@PutMapping("/{id}")
 	public ResponseEntity<MascotaDTO> actualizarMascota(@RequestBody MascotaDTO dto, @PathVariable int id) {
 		MascotaDTO mascotaActualizada = mascotaService.update(dto, id);
@@ -51,14 +51,14 @@ public class MascotaController {
 	}
 
 	// Eliminar una mascota
-	@PreAuthorize("hasRole('CLIENTE')")
+	//@PreAuthorize("hasRole('CLIENTE')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> eliminarMascota(@RequestParam Integer id) {
         return mascotaService.delete(id);
 	}
 
 	// Obtener todas las mascotas
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<MascotaDTO>> obtenerTodas() {
 		List<MascotaDTO> mascotas = mascotaService.listAll();
@@ -66,7 +66,7 @@ public class MascotaController {
 	}
 
 	// Obtener una mascota por ID
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> obtenerMascotaPorId(@PathVariable Integer id) {
 		MascotaDTO mascota = mascotaService.findById(id);
