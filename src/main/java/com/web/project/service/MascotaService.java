@@ -57,38 +57,35 @@ public class MascotaService {
     //Peticion realizada una vez logeado
     public MascotaDTO create(MascotaDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Usuario u = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("El usuario no existe"));
 
-        if (authentication == null || authentication.getName() == null) throw new RuntimeException("No se encontró usuario autenticado.");
+        throw new RuntimeException("Correo" + authentication.getName());
+
+        // Usuario u = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("El usuario no existe"));
+        // if (authentication == null || authentication.getName() == null) throw new RuntimeException("No se encontró usuario autenticado.");
         
-        if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
-        }
-
-        TipoMascota tipo;
-        if (dto.getTipoId() != null) {
-            tipo = tipoMascotaRepository.findById(dto.getTipoId())
-                    .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
-        }else {
-            throw new IllegalArgumentException("El campo tipo de mascota es obligatorio.");
-        }
-
-        if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
-            throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
-        }
-
-        // if (dto.getDescripcion() == null || dto.getDescripcion().trim().isEmpty()) {
-        //     throw new IllegalArgumentException("La descripción de la mascota es obligatoria.");
+        // if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
+        //     throw new IllegalArgumentException("El nombre de la mascota es obligatorio.");
+        // }
+        // TipoMascota tipo;
+        // if (dto.getTipoId() != null) {
+        //     tipo = tipoMascotaRepository.findById(dto.getTipoId())
+        //             .orElseThrow(() -> new NoSuchElementException("El tipo de mascota con ID " + dto.getTipoId() + " no existe."));
+        // }else {
+        //     throw new IllegalArgumentException("El campo tipo de mascota es obligatorio.");
         // }
 
-        Mascota mascota = new Mascota();
-        mascota.setNombre(dto.getNombre());
-        mascota.setEdad(dto.getEdad());
-        mascota.setDescripcion(dto.getDescripcion());
-        mascota.setUsuario(u);
-        mascota.setTipoMascota(tipo);
+        // if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
+        //     throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
+        // }
 
-        return toDTO(mascotaRepository.save(mascota));
+        // Mascota mascota = new Mascota();
+        // mascota.setNombre(dto.getNombre());
+        // mascota.setEdad(dto.getEdad());
+        // mascota.setDescripcion(dto.getDescripcion());
+        // mascota.setUsuario(u);
+        // mascota.setTipoMascota(tipo);
+
+        // return toDTO(mascotaRepository.save(mascota));
     }
 
     //Peticion realizada una vez logeado
