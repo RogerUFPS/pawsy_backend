@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isPublicRoute(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/");
+        return path.startsWith("/auth") || path.startsWith("/docs") || path.startsWith("/v3");
     }
 
     @Override
@@ -63,6 +63,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
+                System.out.println("Autenticación establecida: " + authToken.getName());
+
             }
         }
         filterChain.doFilter(request, response);
