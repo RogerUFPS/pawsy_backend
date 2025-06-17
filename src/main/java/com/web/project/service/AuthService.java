@@ -11,6 +11,7 @@ import com.web.project.repository.UsuarioRepository;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,14 +75,14 @@ public class AuthService {
                 } else throw new RuntimeException("Ya existe el usuario, esta pendiente su verificacion");
                 
             } else {
-                throw new RuntimeException("El usuario ya existe, se eliminó para que pueda registrarse nuevamente.");
+                throw new RuntimeException("El usuario ya existe");
             }
         }
 
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(request.getNombre());
         nuevoUsuario.setEmail(request.getEmail());
-        nuevoUsuario.setTipoUsuario(request.getTipoUsuario());
+        nuevoUsuario.setTipoUsuario("CLIENTE");
         nuevoUsuario.setClave(passwordEncoder.encode(request.getPassword()));
         nuevoUsuario.setVerificado(false);
 

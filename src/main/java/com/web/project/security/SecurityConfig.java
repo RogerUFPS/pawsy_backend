@@ -31,8 +31,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login", "/auth/verificar-email", "/auth/reenvio-token", "/auth/recuperar-contra", "/verificar-cambio-contra", "/docs/**", "/api-docs/**").permitAll()
-                        .requestMatchers("/auth/cambio-contra", "/api/usuario/**", "/api/mascota/**", "/api/propiedades").hasAnyRole("CLIENTE", "CUIDADOR")
+                        .requestMatchers("/auth/cambio-contra", "/api/usuario/**", "/api/mascota/**", "/api/propiedades", "/api/servicios/listar/**").hasAnyRole("CLIENTE", "CUIDADOR")
                         .requestMatchers("/api/propiedades/**").hasAnyRole("CUIDADOR")
+                        .requestMatchers("/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

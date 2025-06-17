@@ -39,7 +39,7 @@ public class PropiedadController {
     }
 
     @PreAuthorize("hasRole('CUIDADOR')")
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<?> crearPropiedad(@RequestBody PropiedadDTO dto) {
         propiedadService.crearPropiedad(dto);
         return ResponseEntity.ok("Propiedad registrada correctamente");
