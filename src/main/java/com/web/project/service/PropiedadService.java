@@ -1,12 +1,11 @@
 package com.web.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.web.project.dto.PropiedadDTO;
-import com.web.project.dto.PropiedadResponse;
-import com.web.project.dto.ServicioResponse;
-import com.web.project.dto.UsuarioResumen;
 import com.web.project.entity.Propiedad;
 import com.web.project.entity.Servicio;
 import com.web.project.entity.Usuario;
@@ -15,7 +14,6 @@ import com.web.project.repository.ServicioRepository;
 import com.web.project.repository.UsuarioRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PropiedadService {
@@ -29,16 +27,23 @@ public class PropiedadService {
     @Autowired
     private ServicioRepository servicioRepository;
 
-    public List<PropiedadResponse> listarPropiedades() {
-        return propiedadRepository.findAll().stream().map(this::convertirAResponse).toList();
+    public List<Propiedad> listarTodas() {
+        return propiedadRepository.findAll();
     }
 
     public Propiedad obtenerPorId(Integer id) {
         return propiedadRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
     }
-
+    //Peticion realizada cuando se logeo
     public void crearPropiedad(PropiedadDTO dto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
+            throw new RuntimeException("El usuario no existe");    
+        }
+        Usuario u = usuarioRepository.findByEmail(authentication.getName()).get();
+
         Propiedad propiedad = new Propiedad();
         propiedad.setCapacidad(dto.getCapacidad());
         propiedad.setDescripcion(dto.getDescripcion());
@@ -46,26 +51,21 @@ public class PropiedadService {
         propiedad.setNombre(dto.getNombre());
         propiedad.setPrecioPorNoche(dto.getPrecioPorNoche());
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        propiedad.setUsuario(usuario);
-
+        propiedad.setUsuario(u);
         List<Servicio> servicios = servicioRepository.findAllById(dto.getServiciosIds());
         propiedad.setServicios(servicios);
 
         propiedadRepository.save(propiedad);
     }
 
-    public Propiedad actualizar(Integer id, PropiedadDTO dto) {
+    //Peticion realizada cuando se logea
+    public Propiedad actualizar(Integer id, PropiedadDTO propiedadActualizada) {
         Propiedad propiedad = obtenerPorId(id);
-        propiedad.setNombre(dto.getNombre());
-        propiedad.setDescripcion(dto.getDescripcion());
-        propiedad.setDireccion(dto.getDireccion());
-        propiedad.setCapacidad(dto.getCapacidad());
-        propiedad.setPrecioPorNoche(dto.getPrecioPorNoche());
-
-        List<Servicio> servicios = servicioRepository.findAllById(dto.getServiciosIds());
-        propiedad.setServicios(servicios);
+        propiedad.setNombre(propiedadActualizada.getNombre());
+        propiedad.setDescripcion(propiedadActualizada.getDescripcion());
+        propiedad.setDireccion(propiedadActualizada.getDireccion());
+        propiedad.setCapacidad(propiedadActualizada.getCapacidad());
+        propiedad.setPrecioPorNoche(propiedadActualizada.getPrecioPorNoche());
 
         return propiedadRepository.save(propiedad);
     }
@@ -73,29 +73,4 @@ public class PropiedadService {
     public void eliminar(Integer id) {
         propiedadRepository.deleteById(id);
     }
-
-    public PropiedadResponse convertirAResponse(Propiedad propiedad) {
-        UsuarioResumen usuario = new UsuarioResumen(
-                propiedad.getUsuario().getId(),
-                propiedad.getUsuario().getNombre(),
-                propiedad.getUsuario().getEmail());
-
-        List<ServicioResponse> servicios = propiedad.getServicios().stream()
-                .map(servicio -> new ServicioResponse(
-                        servicio.getId(),
-                        servicio.getNombre(),
-                        servicio.getDescripcion()))
-                .collect(Collectors.toList());
-
-        return new PropiedadResponse(
-                propiedad.getId(),
-                propiedad.getNombre(),
-                propiedad.getDireccion(),
-                propiedad.getDescripcion(),
-                propiedad.getCapacidad(),
-                propiedad.getPrecioPorNoche(),
-                usuario,
-                servicios);
-    }
-
 }

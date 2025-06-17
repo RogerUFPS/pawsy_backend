@@ -3,6 +3,7 @@ package com.web.project.service;
 import com.web.project.dto.AuthRequest;
 import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
+import com.web.project.dto.RecoveryPasswordReq;
 import com.web.project.dto.RegisterRequest;
 import com.web.project.entity.Usuario;
 import com.web.project.repository.UsuarioRepository;
@@ -112,58 +113,33 @@ public class AuthService {
 
     public void changePassword(ChangePasswordRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
-        //Es el email
         String email = authentication.getName();
-    
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-        if(!passwordEncoder.matches(request.getCurrentPassword(), usuario.getClave())) {
-            throw new IllegalArgumentException("La contraseña es incorrecta");
-        }
-
+        if(!passwordEncoder.matches(request.getCurrentPassword(), usuario.getClave())) throw new IllegalArgumentException("La contraseña es incorrecta");
         usuario.setClave(passwordEncoder.encode(request.getNewPassword()));
         usuarioRepo.save(usuario);
     }
 
+    public void recoverPasswordApply(String uuid, String email, RecoveryPasswordReq r) {
+        Usuario u = usuarioRepo.findByEmail(email).orElseThrow(()-> new RuntimeException("Usuario no encontrado"));
+        u.setClave(passwordEncoder.encode(r.getNewPassword()));
+        usuarioRepo.save(u);
+    }
+
     public void recoverPassword(String email) {
-
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
-
-        if(!usuario.isVerificado()){
-            throw new IllegalStateException("El usuario no esta verificado, no puede recuperar su contraseña");
-        }
-
+        if(!usuario.isVerificado()) throw new IllegalStateException("El usuario no esta verificado, no puede recuperar su contraseña");
         usuario.setToken(UUID.randomUUID().toString());
         usuarioRepo.save(usuario);
         em.recuperarContra(email, usuario.getToken());
     }
 
-    public void confirmarRecuperacion(String email, String UUID, String nuevaContra) {
-
-        Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
-
-        if(!usuario.getToken().equals(UUID)) {
-            throw new IllegalArgumentException("Incorrecto, verificacion invalida");
-        }
-
-        usuario.setClave(passwordEncoder.encode(nuevaContra));
-        usuario.setToken(null);
-        usuarioRepo.save(usuario);
-    }
-
     public void reenviarToken(String email) {
-
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-        if(usuario.isVerificado()) {
-            throw new IllegalStateException("El usuario ya esta verificado");
-        }
-
+        if(usuario.isVerificado()) throw new IllegalStateException("El usuario ya esta verificado");
         usuario.setToken(UUID.randomUUID().toString());
         usuario.setExpiracion(OffsetDateTime.now(ZoneOffset.of("-05:00")));
         usuarioRepo.save(usuario);
         em.enviarEmailVerificacion(email, usuario.getToken());
-
     }
 }

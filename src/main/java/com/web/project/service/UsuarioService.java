@@ -37,6 +37,7 @@ public class UsuarioService {
         n.setEmail(a.getEmail());
         n.setNombre(a.getNombre());
         n.setTelefono(a.getTelefono()); 
+        n.setTipoUsuario(a.getTipoUsuario());
         return ResponseEntity.ok(n);
     }
 
@@ -46,29 +47,11 @@ public class UsuarioService {
         return ResponseEntity.ok(ne);
     }
 
-    public ResponseEntity<?> updateNombre(String nombre) {
+    public void updateNombre(String nombre) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
         a.setNombre(nombre);
         usuarioRepository.save(a);
-        return ResponseEntity.ok("Se actualizo correctamente");
-    }
-
-    public ResponseEntity<?> crearUsuario(Usuario usuario) {
-    	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
-        }
-        usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Se ha creado el usuario correctamente");
-    }
-
-    public List<Usuario> obtenerTodosLosUsuarios() {
-        return usuarioRepository.findAll();
-    }
-
-    public ResponseEntity<List<CuidadorDTO>> obtenerCuidadores() {
-        List<Usuario> s = usuarioRepository.findByTipoUsuario("CUIDADOR");
-        return ResponseEntity.ok(s.stream().map(this::toDTO).collect(Collectors.toList()));
     }
 
     private CuidadorDTO toDTO(Usuario u) {
@@ -81,56 +64,18 @@ public class UsuarioService {
                 .build();
     }
 
-    //Peticion realizada cuando el usuario este logeado
-    public ResponseEntity<?> actualizarUsuario(Usuario ua) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
-            throw new RuntimeException("El usuario no existe");    
-        }
-        Usuario a = usuarioRepository.findByEmail(authentication.getName()).get();
-        if(!a.isVerificado()) {
-            throw new RuntimeException("El usuario no esta verificado");
-        }
-        a.setNombre(ua.getNombre());
-        a.setEmail(ua.getEmail());
-        //a.setDireccion(ua.getDireccion());
-        a.setTelefono(ua.getTelefono());
-        //a.setDireccion(ua.getDireccion());
-        a.setTipoUsuario(ua.getTipoUsuario());
-        usuarioRepository.save(a);
-
-        return ResponseEntity.ok("Se ha actualizado el usuario");
-
-    }
-
-    //Peticion por admin
     public ResponseEntity<?> eliminarUsuario(Integer id) {
-
         Usuario a = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("El usuario no existe"));
-
         usuarioRepository.delete(a);
-
         return ResponseEntity.ok("Se ha eliminado el usuario correctamente");
     }
 
-    //Peticion realizada cuando el usuario esta logeado
-    public ResponseEntity<?> convertirCuidador(String telefono) {
-        
+    public void convertirCuidador(String telefono) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!usuarioRepository.findByEmail(authentication.getName()).isPresent()){
-            throw new RuntimeException("El usuario no existe");    
-        }
-        Usuario a = usuarioRepository.findByEmail(authentication.getName()).get();
-        
-        if(!a.isVerificado()) {
-            throw new RuntimeException("El usuario no esta verificado, no puede convertirse en cuidador");
-        }
-        //a.setDireccion(direccion);
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()->new RuntimeException("El usuario no existe"));
+        if(!a.isVerificado()) throw new RuntimeException("El usuario no esta verificado");
         a.setTelefono(telefono);
         a.setTipoUsuario("CUIDADOR");
-        a.getRoles().add("CUIDADOR");
         usuarioRepository.save(a);
-    
-        return ResponseEntity.ok("Se ha convertido en un cuidador");
     }
 }

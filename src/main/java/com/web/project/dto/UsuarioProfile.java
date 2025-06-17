@@ -6,5 +6,6 @@ import lombok.Data;
 public class UsuarioProfile {
     private String email;
     private String nombre;
-    private String telefono;    
+    private String telefono;
+    private String tipoUsuario;    
 }

@@ -13,8 +13,9 @@ import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/usuario")
@@ -33,45 +34,16 @@ public class UsuarioController {
         return usuarioService.getCuidadores();
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
-        return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
+    @PutMapping("/to-cuidador/{telefono}")
+    public ResponseEntity<?> serCuidador(@PathVariable String telefono) {
+        usuarioService.convertirCuidador(telefono);
+        return ResponseEntity.ok("Se ha convertido a cuidador");
     }
 
-    //@PreAuthorize("hasRole('CLIENTE')")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarUsuario(@RequestParam Integer id, @RequestBody Usuario usuario) {
-        return usuarioService.actualizarUsuario(usuario);
+    @PutMapping("/{nombre}")
+    public ResponseEntity<?> actualizarNombre(@PathVariable String nombre) {
+        usuarioService.updateNombre(nombre);
+        return ResponseEntity.ok("Se ha actualizado el nombre");
     }
 
-    //@PreAuthorize("hasRole('CLIENTE')")
-    @GetMapping("/obtener-cuidadores")
-    public ResponseEntity<List<CuidadorDTO>> obtenerCuidadores() {
-        return usuarioService.obtenerCuidadores();
-    }
-
-    //@PreAuthorize("hasRole('CLIENTE')")
-    @PutMapping("/to-cuidador")
-    public ResponseEntity<?> serCuidador(@RequestParam Integer id, @RequestParam String telefono) {
-        return usuarioService.convertirCuidador(telefono);
-    }
-
-    //@PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.crearUsuario(usuario);
-    }
-
-    //@PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Integer id) {
-        return null;
-    }
-
-    //@PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarUsuario(@RequestParam Integer id) {
-        return usuarioService.eliminarUsuario(id);
-    }
 }

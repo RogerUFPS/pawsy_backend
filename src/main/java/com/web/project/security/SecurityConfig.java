@@ -30,9 +30,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                        // .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
-                        // .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/verificar-email", "/auth/reenvio-token", "/auth/recuperar-contra", "/verificar-cambio-contra", "/docs/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/auth/cambio-contra", "/api/usuario/**", "/api/mascota/**").hasAnyRole("CLIENTE", "CUIDADOR")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

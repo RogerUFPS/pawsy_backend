@@ -3,9 +3,11 @@ package com.web.project.controller;
 import com.web.project.dto.AuthRequest;
 import com.web.project.dto.AuthResponse;
 import com.web.project.dto.ChangePasswordRequest;
+import com.web.project.dto.RecoveryPasswordReq;
 import com.web.project.dto.RegisterRequest;
 import com.web.project.service.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,23 +45,21 @@ public class AuthController {
         return ResponseEntity.ok("Se ha reenviado el token, revisa el correo");
     }
     
-
     @PostMapping("/cambio-contra")
     public ResponseEntity<?> cambioContra(@RequestBody ChangePasswordRequest req) {
         authService.changePassword(req);
         return ResponseEntity.ok("La contraseña se actualizo correctamente");
     }
 
-    @PostMapping("/recuperar-sent-token")
+    @PostMapping("/recuperar-contra")
     public ResponseEntity<?> recuperarContra(@RequestBody String email) {
         authService.recoverPassword(email);
         return ResponseEntity.ok("Se ha enviado el correo de verificacion");
     }
 
     @PostMapping("/verificar-cambio-contra")
-    public ResponseEntity<?> verificarCambioContra(@RequestParam String UUID, @RequestParam String email, @RequestBody String contraNueva) {
-        
-        authService.confirmarRecuperacion(email, UUID, contraNueva);
+    public ResponseEntity<?> verificarCambioContra(@RequestParam String UUID, @RequestParam String email, @RequestBody RecoveryPasswordReq r) {
+        authService.recoverPasswordApply(UUID, email, r);
         return ResponseEntity.ok("Se ha cambiado la contraseña");
     }
     
