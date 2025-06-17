@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/mascota")
@@ -26,6 +29,12 @@ public class MascotaController {
         List<MascotaDTO> mascotas = mascotaService.listarPorCliente();
         return ResponseEntity.ok(mascotas);
 	}
+
+	@GetMapping("/lista-mascotas")
+	public ResponseEntity<List<MascotaDTO>> listaMascotasCliente() {
+		return ResponseEntity.ok(mascotaService.listarPorCliente());
+	}
+	
 
 	// Crear una nueva mascota
 	//@PreAuthorize("hasRole('CLIENTE')")

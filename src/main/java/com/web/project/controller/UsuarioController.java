@@ -28,7 +28,7 @@ public class UsuarioController {
     }
     
     @GetMapping("/cuidadores")
-    public ResponseEntity<List<Usuario>> getCUidadores() {
+    public ResponseEntity<List<Usuario>> getCuidadores() {
         return usuarioService.getCuidadores();
     }
 
