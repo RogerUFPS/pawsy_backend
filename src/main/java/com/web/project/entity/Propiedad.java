@@ -51,7 +51,12 @@ public class Propiedad implements Serializable {
 	@JsonIgnore
 	private List<Reserva> reservas;
 
-	@ManyToMany(mappedBy="propiedades")
+	@ManyToMany
+	@JoinTable(
+			name = "propiedad_servicio",
+			joinColumns = @JoinColumn(name = "propiedad_id"),
+			inverseJoinColumns = @JoinColumn(name = "servicio_id")
+	)
 	private List<Servicio> servicios;
 }
 

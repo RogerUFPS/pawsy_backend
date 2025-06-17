@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class ServicioResponse {
     private Integer id;
     private String nombre;
+    private String descripcion;
 }

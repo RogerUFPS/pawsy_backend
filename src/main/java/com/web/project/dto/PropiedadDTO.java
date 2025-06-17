@@ -34,8 +34,8 @@ public class PropiedadDTO {
 
     private BigDecimal precioPorNoche;
 
-    //@NotNull(message = "El ID del usuario es obligatorio")
-    //private Integer usuarioId;
+    @NotNull(message = "El ID del usuario es obligatorio")
+    private Integer usuarioId;
 
     private List<Integer> serviciosIds;
 }

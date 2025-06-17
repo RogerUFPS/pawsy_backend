@@ -64,6 +64,9 @@ public class PropiedadService {
         propiedad.setCapacidad(dto.getCapacidad());
         propiedad.setPrecioPorNoche(dto.getPrecioPorNoche());
 
+        List<Servicio> servicios = servicioRepository.findAllById(dto.getServiciosIds());
+        propiedad.setServicios(servicios);
+
         return propiedadRepository.save(propiedad);
     }
 
@@ -80,7 +83,8 @@ public class PropiedadService {
         List<ServicioResponse> servicios = propiedad.getServicios().stream()
                 .map(servicio -> new ServicioResponse(
                         servicio.getId(),
-                        servicio.getNombre()))
+                        servicio.getNombre(),
+                        servicio.getDescripcion()))
                 .collect(Collectors.toList());
 
         return new PropiedadResponse(
