@@ -42,10 +42,18 @@ public class UsuarioService {
     }
 
     public ResponseEntity<List<Usuario>> getCuidadores() {
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<Usuario> ne = usuarioRepository.findByTipoUsuario("CUIDADOR");
         return ResponseEntity.ok(ne);
-    }   
+    }
+
+    public ResponseEntity<?> updateNombre(String nombre) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()-> new RuntimeException("El usuario con email " + authentication.getName() + " no existe "));
+        a.setNombre(nombre);
+        usuarioRepository.save(a);
+        return ResponseEntity.ok("Se actualizo correctamente");
+    }
 
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
