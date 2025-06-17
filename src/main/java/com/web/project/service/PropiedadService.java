@@ -95,6 +95,34 @@ public class PropiedadService {
         return lpR;
     }
 
+    public PropiedadRes obtenerPropiedadPorId(int id) {
+        Propiedad p = propiedadRepository.findById(id).orElseThrow(()-> new RuntimeException("La propiedad no existe"));
+        PropiedadRes pr = new PropiedadRes();
+        pr.setNombre(p.getNombre());
+        pr.setDescripcion(p.getDescripcion());
+        pr.setCapacidad(p.getCapacidad());
+        pr.setId(p.getId());
+        pr.setPrecioPorNoche(p.getPrecioPorNoche());
+
+        UsuarioProfile usrp = new UsuarioProfile();
+        usrp.setEmail(p.getUsuario().getEmail());
+        usrp.setNombre(p.getUsuario().getNombre());
+        usrp.setTelefono(p.getUsuario().getTelefono());
+        usrp.setTipoUsuario(p.getUsuario().getTipoUsuario());
+        pr.setUsuario(usrp);
+
+
+        List<FotosDtoRes> ftres = new ArrayList<>();
+        for(FotoPropiedad fp : p.getFotos()) {
+            FotosDtoRes fdr = new FotosDtoRes();
+            fdr.setDescripcion(fp.getDescripcion());
+            fdr.setUrl(fp.getUrl());
+            ftres.add(fdr);
+        }
+        pr.setFotos(ftres);
+        return pr;
+    }
+
     public void crearPropiedad(PropiedadDTO dto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

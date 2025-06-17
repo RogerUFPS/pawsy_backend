@@ -39,9 +39,8 @@ public class ReservaService {
         Usuario a = usuarioRepository.findByEmail(authentication.getName()).orElseThrow(()->new RuntimeException("El usuario no existe"));
         Propiedad p = propiedadRepository.findById(resq.getPropiedadId()).orElseThrow(()-> new RuntimeException("La propiedad no existe"));
         if(p.getCapacidad() == 0) throw new RuntimeException("Esta propiedad ya no tiene mas cupos");
-
         Mascota m = mascotaRepository.findById(resq.getIdMascota()).orElseThrow(()-> new RuntimeException("La mascota no existe"));
-
+        for(Reserva r : m.getReservas()) if(!(r.getFechaFin().isBefore(resq.getFechaInicio()) || resq.getFechaFin().isBefore(r.getFechaInicio()))) throw new RuntimeException("La fecha se cruza con otra reserva");
         List<Servicio> lS = new ArrayList<>();
         for(Integer i : resq.getServiciosId()) {
             Servicio nT = new Servicio();
@@ -49,6 +48,8 @@ public class ReservaService {
             lS.add(nT);
         }
         Reserva r = new Reserva();
+        p.setCapacidad(p.getCapacidad()-1);
+        propiedadRepository.save(p);
         r.setEstado("Activa");
         r.setFechaInicio(resq.getFechaInicio());
         r.setFechaFin(resq.getFechaFin());
@@ -57,5 +58,6 @@ public class ReservaService {
         r.setServicios(lS);
         reservaRepository.save(r);
     }
+
 
 }
