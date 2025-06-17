@@ -1,6 +1,7 @@
 package com.web.project.controller;
 
 import com.web.project.dto.PropiedadDTO;
+import com.web.project.dto.PropiedadRes;
 import com.web.project.dto.PropiedadResponse;
 import com.web.project.dto.ServicioResponse;
 import com.web.project.dto.UsuarioResumen;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,50 +27,35 @@ public class PropiedadController {
     @Autowired
     private PropiedadService propiedadService;
 
-    @Autowired
-    private PropiedadRepository propiedadRepository;
-
-    @GetMapping("/propiedades")
-    public List<PropiedadResponse> listarPropiedades() {
-        return propiedadRepository.findAll().stream().map(propiedad -> {
-            Usuario u = propiedad.getUsuario();
-            UsuarioResumen user = new UsuarioResumen(u.getId(), u.getNombre(), u.getEmail());
-
-            List<ServicioResponse> servicios = propiedad.getServicios().stream()
-                    .map(s -> new ServicioResponse(s.getId(), s.getNombre()))
-                    .toList();
-
-            return new PropiedadResponse(
-                    propiedad.getId(),
-                    propiedad.getNombre(),
-                    propiedad.getDireccion(),
-                    propiedad.getDescripcion(),
-                    propiedad.getCapacidad(),
-                    propiedad.getPrecioPorNoche(),
-                    user,
-                    servicios);
-        }).toList();
+    @GetMapping()
+    public ResponseEntity<List<PropiedadRes>> listarPropiedades() {
+        return ResponseEntity.ok(propiedadService.listarTodas());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Propiedad> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(propiedadService.obtenerPorId(id));
+    @PreAuthorize("hasRole('CUIDADOR')")
+    @GetMapping("/lista-propiedades")
+    public ResponseEntity<List<PropiedadRes>> listaPropiedadesPropias() {
+        return ResponseEntity.ok(propiedadService.obtenerPropiedadesCuidador());
     }
 
-    @PostMapping
-    public ResponseEntity<?> crearPropiedad(@Valid @RequestBody PropiedadDTO dto) {
+    @PreAuthorize("hasRole('CUIDADOR')")
+    @PostMapping("/create")
+    public ResponseEntity<?> crearPropiedad(@RequestBody PropiedadDTO dto) {
         propiedadService.crearPropiedad(dto);
         return ResponseEntity.ok("Propiedad registrada correctamente");
     }
 
+    @PreAuthorize("hasRole('CUIDADOR')")
     @PutMapping("/{id}")
-    public ResponseEntity<Propiedad> actualizar(@PathVariable Integer id, @RequestBody PropiedadDTO propiedad) {
-        return ResponseEntity.ok(propiedadService.actualizar(id, propiedad));
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody PropiedadDTO propiedad) {
+        propiedadService.actualizar(propiedad, id);
+        return ResponseEntity.ok("Se ha actualizado la propiedad");
     }
 
+    @PreAuthorize("hasRole('CUIDADOR')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+    public ResponseEntity<?> eliminar(@PathVariable Integer id) {
         propiedadService.eliminar(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Se ha eliminado correctamente la propiedad");
     }
 }
