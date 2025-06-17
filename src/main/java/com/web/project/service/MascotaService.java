@@ -73,14 +73,12 @@ public class MascotaService {
         if (dto.getEdad() == null || dto.getEdad() < 0 || dto.getEdad() > 50){
             throw new IllegalArgumentException("La edad de la mascota es obligatoria y no puede ser negativa.");
         }
-
         Mascota mascota = new Mascota();
         mascota.setNombre(dto.getNombre());
         mascota.setEdad(dto.getEdad());
         mascota.setDescripcion(dto.getDescripcion());
         mascota.setUsuario(a);
         mascota.setTipoMascota(tipo);
-
         return toDTO(mascotaRepository.save(mascota));
     }
 

@@ -64,7 +64,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
                 System.out.println("Autenticación establecida: " + authToken.getName());
-
             }
         }
         filterChain.doFilter(request, response);
