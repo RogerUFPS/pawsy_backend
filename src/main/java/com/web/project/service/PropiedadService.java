@@ -35,7 +35,6 @@ public class PropiedadService {
         return propiedadRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Propiedad no encontrada"));
     }
-
     //Peticion realizada cuando se logeo
     public void crearPropiedad(PropiedadDTO dto) {
 
