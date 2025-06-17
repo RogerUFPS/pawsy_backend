@@ -29,11 +29,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isPublicRoute(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/auth") || 
-            path.startsWith("/docs") || 
-            path.startsWith("/v3");
+        return path.startsWith("/");
     }
-
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
