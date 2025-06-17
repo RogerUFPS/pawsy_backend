@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import com.web.project.dto.CuidadorDTO;
 import com.web.project.entity.Usuario;
 import com.web.project.service.UsuarioService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -20,10 +23,14 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("/perfil")
-    public ResponseEntity<Usuario> getMethodName() {
+    public ResponseEntity<Usuario> getPerfil() {
         return usuarioService.getPerfil();
     }
     
+    @GetMapping("/cuidadores")
+    public ResponseEntity<List<Usuario>> getCUidadores() {
+        return usuarioService.getCuidadores();
+    }
 
     //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping

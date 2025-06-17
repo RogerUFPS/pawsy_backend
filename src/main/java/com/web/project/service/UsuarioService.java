@@ -14,6 +14,8 @@ import com.web.project.entity.Usuario;
 import com.web.project.repository.MascotaRepository;
 import com.web.project.repository.UsuarioRepository;
 
+import io.micrometer.core.ipc.http.HttpSender.Response;
+
 @Service
 public class UsuarioService {
 
@@ -28,6 +30,12 @@ public class UsuarioService {
         String email = authentication.getName();
         return ResponseEntity.ok(usuarioRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("El usuario no existe")));
     }
+
+    public ResponseEntity<List<Usuario>> getCuidadores() {
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<Usuario> ne = usuarioRepository.findByTipoUsuario("CUIDADOR");
+        return ResponseEntity.ok(ne);
+    }   
 
     public ResponseEntity<?> crearUsuario(Usuario usuario) {
     	if (usuarioRepository.existsByEmail(usuario.getEmail())) {
@@ -103,6 +111,7 @@ public class UsuarioService {
         }
         //a.setDireccion(direccion);
         a.setTelefono(telefono);
+        a.setTipoUsuario("CUIDADOR");
         a.getRoles().add("CUIDADOR");
         usuarioRepository.save(a);
     
