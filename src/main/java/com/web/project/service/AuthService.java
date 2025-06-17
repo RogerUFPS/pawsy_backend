@@ -130,10 +130,8 @@ public class AuthService {
 
         Usuario usuario = usuarioRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("El usuario no existe"));
 
-        if(!usuario.isVerificado()){
-            throw new IllegalStateException("El usuario no esta verificado, no puede recuperar su contraseña");
-        }
-
+        if(!usuario.isVerificado()) throw new IllegalStateException("El usuario no esta verificado, no puede recuperar su contraseña");
+        
         usuario.setToken(UUID.randomUUID().toString());
         usuarioRepo.save(usuario);
         em.recuperarContra(email, usuario.getToken());
