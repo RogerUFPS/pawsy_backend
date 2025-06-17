@@ -28,13 +28,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicRoute(HttpServletRequest request) {
-    String path = request.getServletPath();
-    return path.startsWith("/register") || 
-           path.startsWith("/login") || 
-           path.startsWith("/verificar-email") || 
-           path.startsWith("/swagger") || 
-           path.startsWith("/v3/api-docs");
-}
+        String path = request.getServletPath();
+        return path.startsWith("/auth") || 
+            path.startsWith("/docs") || 
+            path.startsWith("/v3");
+    }
 
 
     @Override

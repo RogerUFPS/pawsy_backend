@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/auth/**", "/docs/**", "/v3/**").permitAll()
                         // .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
                         // .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
