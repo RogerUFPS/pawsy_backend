@@ -38,37 +38,37 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
-    @PreAuthorize("hasRole('CLIENTE')")
+    //@PreAuthorize("hasRole('CLIENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@RequestParam Integer id, @RequestBody Usuario usuario) {
         return usuarioService.actualizarUsuario(usuario);
     }
 
-    @PreAuthorize("hasRole('CLIENTE')")
+    //@PreAuthorize("hasRole('CLIENTE')")
     @GetMapping("/obtener-cuidadores")
     public ResponseEntity<List<CuidadorDTO>> obtenerCuidadores() {
         return usuarioService.obtenerCuidadores();
     }
 
-    @PreAuthorize("hasRole('CLIENTE')")
+    //@PreAuthorize("hasRole('CLIENTE')")
     @PutMapping("/to-cuidador")
     public ResponseEntity<?> serCuidador(@RequestParam Integer id, @RequestParam String telefono) {
         return usuarioService.convertirCuidador(telefono);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
         return usuarioService.crearUsuario(usuario);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Integer id) {
         return null;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUsuario(@RequestParam Integer id) {
         return usuarioService.eliminarUsuario(id);
