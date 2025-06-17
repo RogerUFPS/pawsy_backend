@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/mascota/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
+                        .requestMatchers("/api/**").hasAnyAuthority("CLIENTE", "CUIDADOR")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
