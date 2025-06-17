@@ -1,6 +1,7 @@
 package com.web.project.entity;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import jakarta.persistence.*;
@@ -26,11 +27,10 @@ public class Reserva implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	@Column(name="fecha_fin", nullable=false)
-	private Date fechaFin;
+	private Instant fechaFin;
 
-	@Temporal(TemporalType.DATE)
 	@Column(name="fecha_inicio", nullable=false)
-	private Date fechaInicio;
+	private Instant fechaInicio;
 
 	//bi-directional many-to-one association to Mascota
 	@ManyToOne
