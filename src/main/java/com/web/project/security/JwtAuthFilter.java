@@ -27,11 +27,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    private boolean isPublicRoute(HttpServletRequest request) {
+    String path = request.getServletPath();
+    return path.startsWith("/register") || 
+           path.startsWith("/login") || 
+           path.startsWith("/verificar-email") || 
+           path.startsWith("/swagger") || 
+           path.startsWith("/v3/api-docs");
+}
+
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+
+        if (isPublicRoute(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }   
 
         String authHeader = request.getHeader("Authorization");
         String jwt;
