@@ -37,7 +37,7 @@ public class UsuarioService {
         UsuarioProfile n = new UsuarioProfile();
         n.setEmail(a.getEmail());
         n.setNombre(a.getNombre());
-        n.setTelefono(a.getTelefono());
+        n.setTelefono(a.getTelefono()); 
         return ResponseEntity.ok(n);
     }
 
