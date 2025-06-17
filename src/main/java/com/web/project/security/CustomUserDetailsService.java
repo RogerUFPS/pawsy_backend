@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<String> roles = new ArrayList<>();
         
         //se guardan con el tipo USER, CUIDADOR o ADMIN
-        roles.add(usuario.getTipoUsuario());
+        roles.add("ROLE_" + usuario.getTipoUsuario());
 
         return User.builder()
                 .username(usuario.getEmail())
