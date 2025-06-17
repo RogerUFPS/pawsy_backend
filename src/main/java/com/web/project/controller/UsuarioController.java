@@ -19,7 +19,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/api/usuario/perfil")
+    @GetMapping("/perfil")
     public ResponseEntity<Usuario> getMethodName() {
         return usuarioService.getPerfil();
     }
